@@ -1,3 +1,4 @@
+@model event_web_dev_project.Models.MyBoardViewModel
 @{
     ViewData["Title"] = "My Board";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -14,7 +15,7 @@
     <!-- Tab Navigation -->
     <div class="tab-nav" id="tabNav">
         <button class="tab-btn active" data-tab="posts">
-            My Posts <span class="tab-count" id="postsCount">2</span>
+            My Posts <span class="tab-count" id="postsCount">@Model.PostsTab.TotalPosts</span>
         </button>
         <button class="tab-btn" data-tab="applications">
             My Applications <span class="tab-count" id="appsCount">2</span>
@@ -28,7 +29,7 @@
 
     <!-- Tab Panels -->
     <div class="tab-panel active" id="tab-posts">
-        @await Html.PartialAsync("~/Views/MyBoard/Components/_MyPostsTab.cshtml")
+        @await Html.PartialAsync("~/Views/MyBoard/Components/_MyPostsTab.cshtml", Model.PostsTab)
     </div>
 
     <div class="tab-panel" id="tab-applications">
