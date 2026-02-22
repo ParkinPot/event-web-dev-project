@@ -6,7 +6,7 @@
 }
 
 .login-page-wrapper {
-    min-height: calc(100vh - 60px); /* 60px = your navbar height */
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
