@@ -27,21 +27,14 @@ public class MyBoardController : Controller
                         ExpirationDate = new DateTime(2026, 3, 10),
                         Author = "John Doe",
                         NumApplication = 5
-                    },
-                    new PostCardModel
-                    {
-                        Category = "Social",
-                        Status = MyPostsTabModel.StatusClosed,
-                        Title = "Weekend Brunch Crew",
-                        Description = "Looking for friendly people to explore new brunch spots around the city every weekend. Spots are filled — thanks everyone!",
-                        Location = "Downtown, NY",
-                        CurrentMember = 4,
-                        MaxMember = 4,
-                        PublishDate = new DateTime(2026, 2, 1),
-                        ExpirationDate = new DateTime(2026, 2, 28),
-                        Author = "John Doe",
-                        NumApplication = 2
                     }
+                }
+            },
+            ApplicationsTab = new MyApplicationsTabModel
+            {
+                Applications = new List<ApplicationCardModel>
+                {
+                    
                 }
             }
         };
