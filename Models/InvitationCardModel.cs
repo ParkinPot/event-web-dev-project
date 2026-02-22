@@ -1,6 +1,6 @@
 namespace event_web_dev_project.Models
 {
-    public class ApplicationCardModel
+    public class InvitationCardModel
     {
         public string? Title { get; set; }
         public string? Status { get; set; }

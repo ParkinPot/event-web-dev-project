@@ -1,6 +1,7 @@
 <!-- _MyPostsTab.cshtml -->
 
 @model event_web_dev_project.Models.MyPostsTabModel
+@using event_web_dev_project.Helpers
 
 <div class="stats-grid stats-grid--5">
     <div class="stat-card">
@@ -34,7 +35,7 @@
                     <span class="badge badge--@(post.Category?.ToLower() ?? "category")">@post.Category</span>
                     <span class="badge badge--@(post.Status?.ToLower() ?? "unknown")">@post.Status</span>
                 </div>
-                <span class="post-card__time">@post.PublishDate.ToString("MMM d, yyyy")</span>
+                <span class="post-card__time">@DateTimeHelper.ToTimeAgo(post.PublishDate)</span>
             </div>
 
             <h3 class="post-card__title">@post.Title</h3>
@@ -52,7 +53,7 @@
                 </div>
                 <div class="meta-item">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    <span>Expires: @post.ExpirationDate.ToString("MMM d, yyyy")</span>
+                    <span>Expires: @post.ExpirationDate.ToString("M/d/yyyy")</span>
                 </div>
             </div>
 
