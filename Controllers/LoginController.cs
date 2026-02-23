@@ -8,7 +8,7 @@ public class LoginController : Controller
 {
     public IActionResult Index()
     {
-        return View();
+        return View("~/Views/Login/Login.cshtml");
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
