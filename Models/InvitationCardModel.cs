@@ -8,15 +8,6 @@ namespace event_web_dev_project.Models
         public DateTime ReceivedDate {get; set;}
         public DateTime EventDate {get; set;}
         public string? Message { get; set; }
-
-        public string StatusMessage =>
-            Status switch
-            {
-                "Accepted" => "🎉 ACCEPT XD",
-                "Pending"  => "⏳ PENDING BRUH",
-                "Rejected" => "❌ REJECTED",
-                _ => ""
-            };
     }
     public class SentInvitationCardModel
     {
@@ -30,9 +21,9 @@ namespace event_web_dev_project.Models
         public string StatusMessage =>
             Status switch
             {
-                "Accepted" => "🎉 ACCEPT XD",
-                "Pending"  => "⏳ PENDING BRUH",
-                "Rejected" => "❌ REJECTED",
+                "Accepted" => "🎉 Great news! The recipient has accepted your invitation.",
+                "Pending"  => "⏳ Your invitation is awaiting the recipient’s response.",
+                "Rejected" => "❌ The recipient has declined your invitation.",
                 _ => ""
             };
     }
