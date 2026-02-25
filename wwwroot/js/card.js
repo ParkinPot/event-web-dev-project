@@ -1,32 +1,6 @@
-const eventsData = [
-    {
-        time: "10 min ago",
-        title: "Looking Football Teammate",
-        author: "By Owner",
-        category: "Sports",
-        applied: "1/3 applied",
-        expires: "expires in 2 days",
-        status: "Open"
-    },
-    {
-        time: "1 hour ago",
-        title: "Board Game Weekend (Avalon)",
-        author: "By Admin",
-        category: "Entertainment",
-        applied: "4/6 applied",
-        expires: "expires today",
-        status: "Urgent"
-    },
-    {
-        time: "2 days ago",
-        title: "UI/UX Designer Meetup",
-        author: "By Community",
-        category: "Design",
-        applied: "15/20 applied",
-        expires: "expires in 1 week",
-        status: "Open"
-    }
-];
+// Use real data from DB injected by Index.cshtml
+// Falls back to empty array if somehow not set
+const eventsData = window.eventData || [];
 
 const container = document.getElementById('event-list-container');
 
@@ -35,7 +9,7 @@ eventsData.forEach((event, index) => {
     const card = document.createElement('div');
     card.classList.add('event-card');
 
-    card.classList.add('fade-in-up'); 
+    card.classList.add('fade-in-up');
     card.style.animationDelay = `${index * 0.3}s`;
 
     const cardHeader = document.createElement('div');
@@ -43,11 +17,11 @@ eventsData.forEach((event, index) => {
 
     const timeBadge = document.createElement('span');
     timeBadge.classList.add('time-badge');
-    timeBadge.textContent = event.time; 
+    timeBadge.textContent = event.postedAt;  // was: event.time
 
     const bookmarkBtn = document.createElement('button');
     bookmarkBtn.classList.add('bookmark-btn');
-    
+
     const bookmarkIcon = document.createElement('i');
     bookmarkIcon.classList.add('fa-regular', 'fa-bookmark');
     bookmarkBtn.appendChild(bookmarkIcon);
@@ -58,11 +32,11 @@ eventsData.forEach((event, index) => {
     cardBody.classList.add('card-body');
 
     const titleDiv = document.createElement('h2');
-    titleDiv.textContent = event.title;
+    titleDiv.textContent = event.title;  // same field name
 
     const authorDiv = document.createElement('p');
     authorDiv.classList.add('author');
-    authorDiv.textContent = event.author;
+    authorDiv.textContent = `By ${event.postedBy}`;  // was: event.author
 
     cardBody.append(titleDiv, authorDiv);
 
@@ -75,26 +49,29 @@ eventsData.forEach((event, index) => {
     function createMetaSpan(iconClass, text) {
         const span = document.createElement('span');
         const icon = document.createElement('i');
-        iconClass.split(' ').forEach(cls => icon.classList.add(cls)); 
+        iconClass.split(' ').forEach(cls => icon.classList.add(cls));
         icon.classList.add('icon-primary');
-        
         span.appendChild(icon);
-        span.append(` ${text}`); 
+        span.append(` ${text}`);
         return span;
     }
 
     const categorySpan = createMetaSpan('fa-solid fa-briefcase', event.category);
-    const appliedSpan = createMetaSpan('fa-regular fa-square-check', event.applied);
-    const expiresSpan = createMetaSpan('fa-regular fa-clock', event.expires);
-    
+    const appliedSpan  = createMetaSpan('fa-regular fa-square-check', `${event.currentMembers}/${event.maxMembers} applied`);  // was: event.applied
+    const expiresSpan  = createMetaSpan('fa-regular fa-clock', `expires ${event.expiresAt}`);  // was: event.expires
+
     const statusSpan = document.createElement('span');
-    statusSpan.textContent = event.status;
+    statusSpan.textContent = event.status;  // same field name
 
     metaInfo.append(categorySpan, appliedSpan, expiresSpan, statusSpan);
 
+    // "Event Detail" button links to the actual post detail page
     const btnPrimary = document.createElement('button');
     btnPrimary.classList.add('btn-primary');
     btnPrimary.textContent = 'Event Detail';
+    btnPrimary.onclick = () => {
+        window.location.href = `/ActivityPost/Index?id=${event.id}`;
+    };
 
     cardFooter.append(metaInfo, btnPrimary);
 
