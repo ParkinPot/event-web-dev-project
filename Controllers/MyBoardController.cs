@@ -4,11 +4,15 @@ using event_web_dev_project.Models;
 
 namespace event_web_dev_project.Controllers;
 
-public class HomeController : Controller
+public class MyBoardController : Controller
 {
     public IActionResult Index()
     {
-        return View();
+        var model = new MyBoardViewModel
+        {
+            
+        };
+        return View(model);
     }
 
     public IActionResult Privacy()
