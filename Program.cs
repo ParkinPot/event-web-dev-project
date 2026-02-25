@@ -4,6 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using event_web_dev_project.Data;
 using Microsoft.AspNetCore.Identity;
 using event_web_dev_project.Models;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
+
+// Add this at the very top of Program.cs before anything else
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,12 +17,12 @@ builder.Services.AddControllersWithViews();
 // Fix 1: EnableRetryOnFailure — stops the app from crashing if SQL Server
 // isn't fully ready yet when the app starts (common in Docker)
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlOptions => sqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 5,
-            maxRetryDelay: TimeSpan.FromSeconds(10),
-            errorNumbersToAdd: null
+    options.UseNpgsql(
+    builder.Configuration.GetConnectionString("DefaultConnection"),
+    npgsqlOptions => npgsqlOptions.EnableRetryOnFailure(
+        maxRetryCount: 5,
+        maxRetryDelay: TimeSpan.FromSeconds(10),
+        errorCodesToAdd: null
         )
     ));
 
