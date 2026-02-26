@@ -67,17 +67,16 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
 // ORDER MATTERS — Authentication must come before Authorization
 app.UseAuthentication();  // ← this was missing from your original file!
 app.UseAuthorization();
 
-app.MapStaticAssets();
-
+app.UseStaticFiles();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Login}/{action=Index}/{id?}");
 
 app.Run();
