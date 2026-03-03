@@ -1,3 +1,5 @@
+
+
 /**
  * activity.js
  * Handles the 5 use-case states for the Activity Detail / Join page:
@@ -15,6 +17,12 @@
 
 (function () {
     'use strict';
+    if (!window.eventData) {
+        console.error("eventData not found");
+        return;
+    }
+    let ACTIVITY = mapActivity(window.eventData);
+    let APPLICATIONS = window.eventData.applications || [];
 
     /* ================================================================
        MOCK DATA
@@ -22,45 +30,28 @@
        to a back-end. ACTIVITY holds the event details; APPLICATIONS
        holds the list of applicants shown in the right sidebar.
        ================================================================ */
-    const ACTIVITY = {
-        id: 1,
-        category: 'dining',
-        categoryLabel: 'Dining',
-        status: 'open',
-        title: 'Korean BBQ Buffet – Tonight!',
-        poster: { name: 'Sarah Chen', href: '#' },
-        postedAt: 'Feb 12, 2026',
-        description: 'Found an amazing Korean BBQ place with a great group deal. Need 3 more people to get the discount. Tonight at 7 PM!',
-        location: 'Seoul Garden BBQ, Downtown',
-        expires: 'Feb 12, 2026 6:00 PM',
-        membersJoined: 1,
-        membersTotal: 3,
-        applicationMode: 'First-come, first-served',
-    };
+    function mapActivity(data) {
+        if (!data) return null;
 
-    const APPLICATIONS = [
-        {
-            id: 'a1',
-            name: 'Mike Rodriguez',
-            date: 'Feb 10, 6:00 PM',
-            message: 'I love Korean BBQ! What time?',
-            status: 'accepted',
-            chatMessages: [
-                { side: 'left', text: 'I love Korean BBQ! What time?', time: 'Feb 10, 6:01 PM' },
-                { side: 'right', text: 'We meet at 7 PM sharp!', time: 'Feb 10, 6:05 PM' },
-            ],
-        },
-        {
-            id: 'a2',
-            name: 'Alex Johnson',
-            date: 'Feb 14, 7:17 PM',
-            message: 'nice',
-            status: 'pending',
-            chatMessages: [
-                { side: 'right', text: 'Alex Johnson\nnice', time: 'Feb 24, 7:18 PM' },
-            ],
-        },
-    ];
+        return {
+            id: data.id,
+            category: (data.category || '').toLowerCase(),
+            categoryLabel: data.category,
+            status: (data.status || '').toLowerCase(),
+            title: data.title,
+            poster: {
+                name: data.postedBy,
+                href: '#'
+            },
+            postedAt: data.postedAt,
+            description: data.description,
+            location: data.location,
+            expires: data.expiresAt,
+            membersJoined: data.currentMembers,
+            membersTotal: data.maxMembers,
+            applicationMode: 'First-come, first-served' // or pass from backend later
+        };
+    }
 
     /* ---- State ---- */
     let currentState = getInitialState();
