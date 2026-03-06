@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using event_web_dev_project.Data;
@@ -11,9 +12,11 @@ using event_web_dev_project.Data;
 namespace event_web_dev_project.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260305175545_AddProfileFieldsToUser")]
+    partial class AddProfileFieldsToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -234,7 +237,7 @@ namespace event_web_dev_project.Migrations
                             Location = "Central Park, Field 3",
                             MaxMembers = 3,
                             PostedAt = new DateTime(2026, 2, 11, 0, 0, 0, 0, DateTimeKind.Utc),
-                            PostedBy = "Sarah Chen",
+                            PostedBy = "Alex Johnson",
                             Status = "Open",
                             Title = "Looking for Football Teammates - Sunday Match"
                         });
@@ -359,6 +362,44 @@ namespace event_web_dev_project.Migrations
                     b.HasIndex("PostId");
 
                     b.ToTable("PostApplications");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ApplicantName = "Sarah Chen",
+                            AppliedAt = new DateTime(2026, 2, 11, 14, 30, 0, 0, DateTimeKind.Utc),
+                            Message = "I'd love to join! I play midfielder and have experience.",
+                            PostId = 1,
+                            Status = "Accepted"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ApplicantName = "Mike Rodriguez",
+                            AppliedAt = new DateTime(2026, 2, 11, 15, 0, 0, 0, DateTimeKind.Utc),
+                            Message = "Count me in! I'm available on Sunday.",
+                            PostId = 1,
+                            Status = "Accepted"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ApplicantName = "Emily Park",
+                            AppliedAt = new DateTime(2026, 2, 11, 16, 0, 0, 0, DateTimeKind.Utc),
+                            Message = "I'm interested! Can I bring a friend?",
+                            PostId = 1,
+                            Status = "Pending"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ApplicantName = "Jessica Liu",
+                            AppliedAt = new DateTime(2026, 2, 11, 17, 0, 0, 0, DateTimeKind.Utc),
+                            Message = "Would love to join but I'm a beginner. Is that okay?",
+                            PostId = 1,
+                            Status = "Rejected"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
