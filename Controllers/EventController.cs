@@ -1,12 +1,76 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using event_web_dev_project.Data;
+using event_web_dev_project.Models;
 
 namespace event_web_dev_project.Controllers;
 
 public class EventController : Controller
 {
-    // GET /Event/Join?state=apply|pending|accepted|rejected|owner
-    public IActionResult Join()
+    private readonly AppDbContext _db;
+
+    public EventController(AppDbContext db)
     {
-        return View();
+        _db = db;
+    }
+
+    // GET /Event/Join?id=1
+    public async Task<IActionResult> Join(int id)
+    {
+        var post = await _db.ActivityPosts
+            .Include(p => p.Applications)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (post == null) return NotFound();
+
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (post.OwnerId == currentUserId)
+            return RedirectToAction("Index", "ActivityPost", new { id = post.Id });
+
+        return View(post);
+    }
+
+    // POST /Event/SubmitApplication
+    [HttpPost]
+    [Authorize]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SubmitApplication([FromBody] Join model)
+    {
+        if (!ModelState.IsValid)
+            return Json(new { success = false, error = "Invalid data" });
+
+        var post = await _db.ActivityPosts.FindAsync(model.PostId);
+        if (post == null)
+            return Json(new { success = false, error = "Post not found" });
+
+        if (post.Status != "Open")
+            return Json(new { success = false, error = "Post is no longer open" });
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var displayName = User.FindFirstValue(ClaimTypes.Name) ?? model.ApplicantName;
+
+        // Prevent duplicate applications
+        var alreadyApplied = await _db.PostApplications
+            .AnyAsync(a => a.PostId == model.PostId && a.ApplicantId == userId);
+
+        if (alreadyApplied)
+            return Json(new { success = false, error = "You have already applied to this post" });
+
+        var application = new PostApplication
+        {
+            PostId        = model.PostId,
+            ApplicantId   = userId,
+            ApplicantName = displayName,
+            Message       = model.Message,
+            Status        = "Pending",
+            AppliedAt     = DateTime.UtcNow
+        };
+
+        _db.PostApplications.Add(application);
+        await _db.SaveChangesAsync();
+
+        return Json(new { success = true });
     }
 }
