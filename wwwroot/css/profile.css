@@ -619,19 +619,15 @@ body {
         min-width: 0;
         white-space: normal;
         text-align: center;
-    }
-
-    .edit-profile-btn .btn-icon {
-        display: none;
-    }
-
-    .edit-profile-btn {
         order: 999;
         width: 100%;
         justify-content: center;
         margin-bottom:2rem;
     }
 
+    .edit-profile-btn .btn-icon {
+        display: none;
+    }
     .profile-main-info {
         flex-wrap: wrap;
     }
