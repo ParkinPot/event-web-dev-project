@@ -66,9 +66,56 @@
                     <label>Location</label>
                     <div class="input-with-icon">
                         <i class="fa-solid fa-location-dot icon"></i>
-                        <select>
-                            <option>Choose city</option>
-                            <option>Bangkok</option>
+                        <select id="location-select">
+                            <option value="" disabled selected>Choose location</option>
+                            @foreach (var location in ViewBag.Locations)
+                            {
+                                <option value="@location">@location</option>
+                            }
+                        </select>
+                        <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Sort by</label>
+                    <div class="input-with-icon">
+                        <select id="sort-select">
+                            <option value="newest">Newest First</option>
+                            <option value="expiring">Expiring Soon</option>
+                            <option value="members">Most Members</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                    </div>
+                </div>
+
+                <!-- Status filter -->
+                <div class="filter-group">
+                    <label>Status</label>
+                    <div class="checkbox-list">
+                        <label class="checkbox-item">
+                            <span><input type="checkbox" class="status-checkbox" value="Open"> Open</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <span><input type="checkbox" class="status-checkbox" value="Closed"> Closed</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <span><input type="checkbox" class="status-checkbox" value="Expired"> Expired</span>
+                        </label>
+                    </div>
+                </div>
+
+                
+
+                <!-- Date filter -->
+                <div class="filter-group">
+                    <label>Expires within</label>
+                    <div class="input-with-icon">
+                        <select id="date-select">
+                            <option value="">Any time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This week</option>
+                            <option value="month">This month</option>
                         </select>
                         <i class="fa-solid fa-chevron-down arrow-icon"></i>
                     </div>
@@ -76,18 +123,17 @@
 
                 <div class="filter-group">
                     <label>Category</label>
-                    <div class="checkbox-list">
-                        @* Real categories from DB *@
+                    <div class="checkbox-list" id="category-list">
                         @foreach (var category in Model.Select(p => p.Category).Distinct())
                         {
                             var count = Model.Count(p => p.Category == category);
-                            <label class="checkbox-item">
+                            <label class="checkbox-item category-item" style="display:none">
                                 <span><input type="checkbox" value="@category"> @category</span>
                                 <span class="badge">@count</span>
                             </label>
                         }
                     </div>
-                    <button class="btn-show-more">Show More</button>
+                    <button class="btn-show-more" id="btn-show-more">Show More</button>
                 </div>
 
                 <div class="filter-group">

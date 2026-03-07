@@ -475,3 +475,7 @@ button {
         padding: 5rem;
     }
 }
+
+select option[value=""] {
+    display: none;
+}

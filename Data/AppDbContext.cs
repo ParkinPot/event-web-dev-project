@@ -30,7 +30,38 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>  // ← only one 
                 Status = "Open",
                 PostedBy = "Alex Johnson",
                 PostedAt = new DateTime(2026, 2, 11, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new ActivityPost
+            {
+                Id = 2,
+                Title = "Looking for basketball Teammates - Sunday Match",
+                Category = "Sports",
+                Description = "We need 3 more players for a friendly basketball match this Sunday at Central Park. All skill levels welcome! We play 7v7 format.",
+                Location = "Central Park, Field 3",
+                MaxMembers = 3,
+                CurrentMembers = 2,
+                ExpiresAt = new DateTime(2026, 2, 15, 12, 0, 0, DateTimeKind.Utc),
+                ApplicationMode = "Overflow allowed - Owner selects",
+                Status = "Open",
+                PostedBy = "Alex Johnson",
+                PostedAt = new DateTime(2026, 2, 11, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new ActivityPost
+            {
+                Id = 3,
+                Title = "Looking for valleyball Teammates - Sunday Match",
+                Category = "Sports",
+                Description = "We need 3 more players for a friendly valleyball match this Sunday at Central Park. All skill levels welcome! We play 7v7 format.",
+                Location = "Central Park, Field 3",
+                MaxMembers = 3,
+                CurrentMembers = 2,
+                ExpiresAt = new DateTime(2026, 2, 15, 12, 0, 0, DateTimeKind.Utc),
+                ApplicationMode = "Overflow allowed - Owner selects",
+                Status = "Open",
+                PostedBy = "Alex Johnson",
+                PostedAt = new DateTime(2026, 2, 11, 0, 0, 0, DateTimeKind.Utc)
             }
+
         );
 
         modelBuilder.Entity<PostApplication>().HasData(
