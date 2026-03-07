@@ -54,6 +54,23 @@
                         Edit Profile
                     </button>
                 }
+                else if (Model.HasReviewedByCurrentUser)
+                {
+                    <button class="edit-profile-btn"
+                            id="btn-open-profile-review"
+                            aria-label="Edit your review for @Model.DisplayName"
+                            data-action="open-profile-review"
+                            data-reviewee-id="@Model.UserId"
+                            data-reviewee-name="@Model.DisplayName"
+                            data-existing-rating="@(Model.ExistingReviewByCurrentUser?.Rating ?? 0)"
+                            data-existing-comment="@(Model.ExistingReviewByCurrentUser?.Comment ?? "")"
+                            data-existing-anonymous="@(Model.ExistingReviewByCurrentUser?.IsAnonymous == true ? "true" : "false")">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        Edit Review
+                    </button>
+                }
                 else
                 {
                     <button class="edit-profile-btn"
@@ -269,10 +286,11 @@
     {
         <script>
         (function () {
-            var revieweeId   = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Model.UserId)';
-            var revieweeName = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Model.DisplayName)';
+            var revieweeId    = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Model.UserId)';
+            var revieweeName  = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Model.DisplayName)';
+            var isEditMode    = @(Model.HasReviewedByCurrentUser ? "true" : "false");
             var selectedStars = 0;
-            var starLabels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+            var starLabels    = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
 
             /* ── Create modal DOM ─────────────────────────────────────── */
             var modal = document.createElement('div');
@@ -282,7 +300,7 @@
             modal.innerHTML = `
                 <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
                     <div class="modal-header">
-                        <h3 class="modal-title" id="profile-modal-title">Rate <span id="profile-modal-reviewee-name"></span></h3>
+                        <h3 class="modal-title" id="profile-modal-title"><span id="profile-modal-action">${isEditMode ? 'Edit Review for' : 'Rate'}</span> <span id="profile-modal-reviewee-name"></span></h3>
                         <button class="modal-close-btn" id="profile-modal-close" aria-label="Close">&times;</button>
                     </div>
 
@@ -306,7 +324,7 @@
 
                     <div class="modal-actions">
                         <button class="btn-modal-cancel" id="profile-modal-cancel">Cancel</button>
-                        <button class="btn-modal-submit" id="profile-modal-submit">Submit Review</button>
+                        <button class="btn-modal-submit" id="profile-modal-submit">${isEditMode ? 'Update Review' : 'Submit Review'}</button>
                     </div>
 
                     <p id="profile-review-feedback" style="text-align:center;font-size:0.85rem;margin-top:10px;"></p>
@@ -317,12 +335,25 @@
 
             /* ── Open / close helpers ────────────────────────────────── */
             function openModal() {
-                selectedStars = 0;
-                document.getElementById('profile-star-label').textContent = 'Select a rating';
-                document.getElementById('profile-review-comment').value = '';
-                document.getElementById('profile-review-anonymous').checked = false;
+                var openBtn = document.getElementById('btn-open-profile-review');
+                if (isEditMode && openBtn) {
+                    // Pre-fill with existing review data
+                    var existingRating    = parseInt(openBtn.dataset.existingRating) || 0;
+                    var existingComment   = openBtn.dataset.existingComment || '';
+                    var existingAnonymous = openBtn.dataset.existingAnonymous === 'true';
+                    selectedStars = existingRating;
+                    document.getElementById('profile-star-label').textContent = existingRating > 0 ? starLabels[existingRating] : 'Select a rating';
+                    document.getElementById('profile-review-comment').value = existingComment;
+                    document.getElementById('profile-review-anonymous').checked = existingAnonymous;
+                    highlightStars(existingRating);
+                } else {
+                    selectedStars = 0;
+                    document.getElementById('profile-star-label').textContent = 'Select a rating';
+                    document.getElementById('profile-review-comment').value = '';
+                    document.getElementById('profile-review-anonymous').checked = false;
+                    highlightStars(0);
+                }
                 document.getElementById('profile-review-feedback').textContent = '';
-                highlightStars(0);
                 modal.style.display = 'flex';
                 setTimeout(function () { modal.style.opacity = '1'; }, 10);
             }
@@ -375,6 +406,7 @@
                 submitBtn.textContent = 'Submitting…';
 
                 try {
+                    var endpoint = isEditMode ? '/Review/Update' : '/Review/Submit';
                     var body = new URLSearchParams({
                         revieweeId:   revieweeId,
                         revieweeName: revieweeName,
@@ -384,7 +416,7 @@
                         __RequestVerificationToken: token
                     });
 
-                    var resp = await fetch('/Review/Submit', {
+                    var resp = await fetch(endpoint, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: body
@@ -393,25 +425,43 @@
 
                     if (result.success) {
                         closeModal();
-                        // Hide the button so the user cannot submit twice
-                        var openBtn = document.getElementById('btn-open-profile-review');
-                        if (openBtn) {
-                            openBtn.outerHTML = '<span class="btn-rate-done">' +
-                                '★'.repeat(selectedStars) + '☆'.repeat(5 - selectedStars) +
-                                ' Review submitted</span>';
+                        if (!isEditMode) {
+                            // After a new review, switch to edit mode so the button reflects the new state
+                            isEditMode = true;
+                            var openBtn = document.getElementById('btn-open-profile-review');
+                            if (openBtn) {
+                                openBtn.dataset.existingRating    = selectedStars;
+                                openBtn.dataset.existingComment   = comment;
+                                openBtn.dataset.existingAnonymous = anonymous ? 'true' : 'false';
+                                openBtn.setAttribute('aria-label', 'Edit your review for ' + revieweeName);
+                                // Update button text node (the text node after the SVG icon)
+                                openBtn.childNodes.forEach(function(n) {
+                                    if (n.nodeType === 3 && n.textContent.trim()) n.textContent = ' Edit Review';
+                                });
+                                document.getElementById('profile-modal-action').textContent = 'Edit Review for';
+                                document.getElementById('profile-modal-submit').textContent = 'Update Review';
+                            }
+                        } else {
+                            // Update the stored data for future opens
+                            var openBtn = document.getElementById('btn-open-profile-review');
+                            if (openBtn) {
+                                openBtn.dataset.existingRating    = selectedStars;
+                                openBtn.dataset.existingComment   = comment;
+                                openBtn.dataset.existingAnonymous = anonymous ? 'true' : 'false';
+                            }
                         }
-                        showToast();
+                        showToast(isEditMode);
                     } else {
                         feedback.style.color = '#dc2626';
                         feedback.textContent = result.error ?? 'Something went wrong.';
                         submitBtn.disabled = false;
-                        submitBtn.textContent = 'Submit Review';
+                        submitBtn.textContent = isEditMode ? 'Update Review' : 'Submit Review';
                     }
                 } catch (e) {
                     feedback.style.color = '#dc2626';
                     feedback.textContent = 'Network error, please try again.';
                     submitBtn.disabled = false;
-                    submitBtn.textContent = 'Submit Review';
+                    submitBtn.textContent = isEditMode ? 'Update Review' : 'Submit Review';
                 }
             });
 
@@ -425,12 +475,12 @@
             if (openBtn) openBtn.addEventListener('click', openModal);
 
             /* ── Toast ───────────────────────────────────────────────── */
-            function showToast(message) {
+            function showToast(isEdit) {
                 var existing = document.getElementById('profile-toast');
                 if (existing) existing.remove();
                 var el = document.createElement('div');
                 el.id = 'profile-toast';
-                el.textContent = 'Review submitted for ' + revieweeName + '!';
+                el.textContent = (isEdit ? 'Review updated for ' : 'Review submitted for ') + revieweeName + '!';
                 el.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);' +
                     'background:#111827;color:#fff;padding:10px 20px;border-radius:8px;' +
                     'font-size:0.88rem;font-weight:500;z-index:9999;' +

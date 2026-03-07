@@ -108,4 +108,39 @@ public class ReviewController : Controller
 
         return Json(new { success = true });
     }
+
+    // POST /Review/Update
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(string revieweeId, int rating, string? comment, bool isAnonymous = false)
+    {
+        if (rating < 1 || rating > 5)
+            return Json(new { success = false, error = "Rating must be between 1 and 5" });
+
+        var reviewerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (reviewerId == null)
+            return Json(new { success = false, error = "Not authenticated" });
+
+        if (reviewerId == revieweeId)
+            return Json(new { success = false, error = "You cannot review yourself" });
+
+        // Find the existing direct-profile review
+        var existing = await _db.Reviews.FirstOrDefaultAsync(r =>
+            r.PostId == 0 &&
+            r.ReviewerId == reviewerId &&
+            r.RevieweeId == revieweeId);
+
+        if (existing == null)
+            return Json(new { success = false, error = "No existing review found to update" });
+
+        var reviewer = await _userManager.FindByIdAsync(reviewerId);
+        existing.ReviewerName = isAnonymous ? "Anonymous User" : (reviewer?.DisplayName ?? reviewer?.UserName ?? "Unknown");
+        existing.Rating       = rating;
+        existing.Comment      = comment;
+        existing.IsAnonymous  = isAnonymous;
+
+        await _db.SaveChangesAsync();
+
+        return Json(new { success = true });
+    }
 }
