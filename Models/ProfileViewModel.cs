@@ -23,6 +23,12 @@ public class ProfileViewModel
     /// <summary>Whether the currently logged-in user is viewing their own profile.</summary>
     public bool IsOwner { get; set; } = true;
 
+    /// <summary>Whether the currently logged-in user has already submitted a direct profile review for this user.</summary>
+    public bool HasReviewedByCurrentUser { get; set; } = false;
+
+    /// <summary>The existing direct profile review written by the current user, if any.</summary>
+    public Review? ExistingReviewByCurrentUser { get; set; }
+
     public List<ActivityPost> post_history { get; set; } = new List<ActivityPost>();
     public List<ActivityPost> upcoming_activities { get; set; } = new List<ActivityPost>();
     public List<Review> reviews { get; set; } = new List<Review>();

@@ -61,6 +61,19 @@ public class ProfileController : Controller
             .OrderBy(p => p.ExpiresAt)
             .ToListAsync();
 
+        var allReviews = await _context.Reviews
+            .Where(r => r.RevieweeId == profileUserId)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
+
+        // Find any direct-profile review (PostId == 0) written by the current user
+        Review? existingReviewByCurrentUser = null;
+        if (!isOwner && currentUserId != null)
+        {
+            existingReviewByCurrentUser = allReviews
+                .FirstOrDefault(r => r.PostId == 0 && r.ReviewerId == currentUserId);
+        }
+
         var viewModel = new ProfileViewModel
         {
             UserId      = profileUserId,
@@ -75,11 +88,10 @@ public class ProfileController : Controller
             post_history        = postHistory,
             upcoming_activities = upcomingActivities,
 
-            // Reviews received by this user
-            reviews = await _context.Reviews
-                .Where(r => r.RevieweeId == profileUserId)
-                .OrderByDescending(r => r.CreatedAt)
-                .ToListAsync(),
+            reviews = allReviews,
+
+            HasReviewedByCurrentUser    = existingReviewByCurrentUser != null,
+            ExistingReviewByCurrentUser = existingReviewByCurrentUser,
 
             // Compute stats from already-loaded collections
             OrganizedCount = postHistory.Count + upcomingActivities.Count,
