@@ -64,8 +64,8 @@
 @section Scripts {
 <script>
 (function () {
-    var revieweeId   = '@Html.Raw(revieweeId)';
-    var revieweeName = '@Html.Raw(revieweeName?.Replace("'", "\\'"))';
+    var revieweeId   = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(revieweeId)';
+    var revieweeName = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(revieweeName ?? string.Empty)';
 
     var stars     = document.querySelectorAll('.star-pick');
     var label     = document.getElementById('star-label');
