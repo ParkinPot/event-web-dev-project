@@ -425,6 +425,7 @@
 
                     if (result.success) {
                         closeModal();
+                        submitBtn.disabled = false;
                         if (!isEditMode) {
                             // After a new review, switch to edit mode so the button reflects the new state
                             isEditMode = true;
@@ -442,6 +443,7 @@
                                 document.getElementById('profile-modal-submit').textContent = 'Update Review';
                             }
                         } else {
+                            submitBtn.textContent = 'Update Review';
                             // Update the stored data for future opens
                             var openBtn = document.getElementById('btn-open-profile-review');
                             if (openBtn) {
