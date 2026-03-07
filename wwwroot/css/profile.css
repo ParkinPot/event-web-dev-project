@@ -624,6 +624,17 @@ body {
     .edit-profile-btn .btn-icon {
         display: none;
     }
+
+    .edit-profile-btn {
+        order: 999;
+        width: 100%;
+        justify-content: center;
+        margin-bottom:2rem;
+    }
+
+    .profile-main-info {
+        flex-wrap: wrap;
+    }
 }
 /* ===== Review Modal (profile page) ===== */
 .modal-overlay {
