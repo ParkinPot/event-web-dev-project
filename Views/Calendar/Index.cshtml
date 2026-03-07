@@ -8,73 +8,76 @@
     <link rel="stylesheet" href="~/css/calendar.css" />
 }
 
-<div class="container mt-4">
-    <h2 class="fw-bold">Activity Calendar</h2>
-    <p class="text-muted">View activities by their expiration dates</p>
+<div class="page-background">
+    <div class="main-content-container">
+        <header class="calendar-header">
+            <h1>Activity Calendar</h1>
+            <p>View activities by their expiration dates</p>
+        </header>
 
-    <div class="row mt-4">
-        <div class="col-lg-8 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="mb-0 fw-bold">@monthName</h4>
-                        <div>
-                            <a href="@Url.Action("Index", "Calendar", new { year = Model.CurrentMonth == 1 ? Model.CurrentYear - 1 : Model.CurrentYear, month = Model.CurrentMonth == 1 ? 12 : Model.CurrentMonth - 1 })" class="btn btn-outline-secondary btn-sm px-3">&lt;</a>
-                            <a href="@Url.Action("Index", "Calendar", new { year = Model.CurrentMonth == 12 ? Model.CurrentYear + 1 : Model.CurrentYear, month = Model.CurrentMonth == 12 ? 1 : Model.CurrentMonth + 1 })" class="btn btn-outline-secondary btn-sm px-3">&gt;</a>
-                        </div>
+        <div class="calendar-layout-grid">
+            <section class="card calendar-main-card">
+                <div class="calendar-toolbar">
+                    <h2 class="month-title">@monthName</h2>
+                    <div class="nav-buttons">
+                        <a href="@Url.Action("Index", "Calendar", new { year = Model.CurrentMonth == 1 ? Model.CurrentYear - 1 : Model.CurrentYear, month = Model.CurrentMonth == 1 ? 12 : Model.CurrentMonth - 1 })">&lt;</a>
+                        <a href="@Url.Action("Index", "Calendar", new { year = Model.CurrentMonth == 12 ? Model.CurrentYear + 1 : Model.CurrentYear, month = Model.CurrentMonth == 12 ? 1 : Model.CurrentMonth + 1 })">&gt;</a>
                     </div>
+                </div>
 
-                    <div class="cal-grid cal-header">
-                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-                    </div>
+                <div class="days-header-grid">
+                    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                </div>
 
-                    <div class="cal-grid">
-                        @foreach (var day in Model.Days)
-                        {
-                            var isSelected = day.Date.Date == Model.SelectedDate.Date ? "selected-day" : "";
-                            var isCurrent = day.IsCurrentMonth ? "" : "not-current-month";
+                <div class="days-display-grid">
+                    @foreach (var day in Model.Days)
+                    {
+                        var dayClass = day.IsCurrentMonth ? "cal-day" : "cal-day not-current";
+                        if (day.Date.Date == Model.SelectedDate.Date) dayClass += " selected";
+                        if (day.Date.Date == DateTime.Today) dayClass += " today";
 
-                            <div class="cal-day @isCurrent @isSelected" onclick="selectDate('@day.Date.ToString("yyyy-MM-dd")', this)">
-                                <div class="date-number">@day.Date.Day</div>
-                                
+                        <div class="@dayClass" onclick="selectDate('@day.Date.ToString("yyyy-MM-dd")', this)">
+                            <span class="day-number">@day.Date.Day</span>
+                            <div class="event-list">
                                 @foreach (var ev in day.Events.Take(2))
                                 {
-                                    <div class="event-pill @ev.CssColorClass" title="@ev.Title">
-                                        @ev.Title
-                                    </div>
-                                }
-                                @if (day.Events.Count > 2)
-                                {
-                                    <div class="text-muted text-center mt-1" style="font-size:0.7rem; font-weight:600;">
-                                        +@(day.Events.Count - 2) more
-                                    </div>
+                                    <div class="event-pill @ev.CssColorClass" title="@ev.Title">@ev.Title</div>
                                 }
                             </div>
-                        }
-                    </div>
+                            @if (day.Events.Count > 2)
+                            {
+                                <span class="more-text">+@(day.Events.Count - 2) more</span>
+                            }
+                        </div>
+                    }
                 </div>
-            </div>
 
-            <div class="d-flex align-items-center flex-wrap gap-2 mt-3" style="font-size: 0.85rem;">
-                <strong class="me-2">Category Legend</strong>
-                <span class="badge rounded-pill cat-sports px-3 py-2">Sports</span>
-                <span class="badge rounded-pill cat-dining px-3 py-2">Dining</span>
-                <span class="badge rounded-pill cat-social px-3 py-2">Social</span>
-                <span class="badge rounded-pill cat-shopping px-3 py-2">Shopping</span>
-                <span class="badge rounded-pill cat-study px-3 py-2">Study</span>
-                <span class="badge rounded-pill cat-others px-3 py-2">Others</span>
-            </div>
-        </div>
+                <footer class="legend-section">
+                    <h3>Category Legend</h3>
+                    <div class="legend-items">
+                        <div class="legend-item"><span class="dot sports"></span> Sports</div>
+                        <div class="legend-item"><span class="dot dining"></span> Dining</div>
+                        <div class="legend-item"><span class="dot social"></span> Social</div>
+                        <div class="legend-item"><span class="dot shopping"></span> Shopping</div>
+                        <div class="legend-item"><span class="dot study"></span> Study</div>
+                        <div class="legend-item"><span class="dot others"></span> Others</div>
+                    </div>
+                </footer>
+            </section>
 
-        <div class="col-lg-4">
-            <div class="card shadow-sm border-0" style="min-height: 500px;">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold mb-4" id="detailDateLabel">@Model.SelectedDate.ToString("MMMM dd, yyyy")</h5>
-                    
-                    <h6 class="text-muted fw-bold mb-3">Activities</h6>
+            <aside class="card details-card">
+                <h2 id="detailDateLabel" class="detail-date">@Model.SelectedDate.ToString("MMMM dd, yyyy")</h2>
+                
+                <div class="detail-section">
+                    <p class="section-label">Activities</p>
                     <div id="activitiesContainer"></div>
                 </div>
-            </div>
+
+                <div class="detail-section">
+                    <p class="section-label invitation-header">✉ Your Invitations</p>
+                    <div id="invitationsContainer"></div>
+                </div>
+            </aside>
         </div>
     </div>
 </div>
@@ -84,46 +87,41 @@
         const allEvents = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.AllEventsThisMonth));
 
         function selectDate(dateString, element) {
-            if (element) {
-                document.querySelectorAll('.cal-day').forEach(el => el.classList.remove('selected-day'));
-                element.classList.add('selected-day');
-            }
+            document.querySelectorAll('.cal-day').forEach(el => el.classList.remove('selected'));
+            if (element) element.classList.add('selected');
 
-            const [year, month, day] = dateString.split('-');
-            const dateObj = new Date(year, month - 1, day);
+            const dateObj = new Date(dateString);
             document.getElementById('detailDateLabel').innerText = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-            const eventsForDate = allEvents.filter(e => e.EventDate.startsWith(dateString));
+            const activities = allEvents.filter(e => e.EventDate.startsWith(dateString));
             const container = document.getElementById('activitiesContainer');
-            container.innerHTML = '';
+            container.innerHTML = activities.length ? '' : '<p class="empty-msg">No activities scheduled.</p>';
 
-            if (eventsForDate.length === 0) {
-                container.innerHTML = '<div class="text-center text-muted mt-5"><p>No activities scheduled.</p></div>';
-                return;
-            }
-
-            eventsForDate.forEach(ev => {
-                let badgeClass = ev.CssColorClass;
-                let statusHtml = ev.Status ? `<span class="badge bg-light text-dark float-end border">${ev.Status}</span>` : '';
-                
-                let sourceBadge = ev.SourceType === 'Post' 
-                    ? `<span class="badge bg-light text-primary border border-primary float-end me-1">My Event</span>` 
-                    : `<span class="badge bg-light text-success border border-success float-end me-1">Joined</span>`;
-
+            activities.forEach(ev => {
                 container.innerHTML += `
-                    <div class="activity-card">
-                        ${statusHtml}
-                        ${sourceBadge}
-                        <span class="activity-badge text-white ${badgeClass}">${ev.Category}</span>
-                        <h6 class="fw-bold mt-2 mb-1">${ev.Title}</h6>
-                        <p class="text-muted small mb-0">by ${ev.Author}</p>
-                    </div>
-                `;
+                    <div class="activity-item-card">
+                        <span class="category-tag ${ev.CssColorClass}">${ev.Category}</span>
+                        <h4 class="activity-name">${ev.Title}</h4>
+                        <p class="activity-owner">by ${ev.Author}</p>
+                        <p class="activity-stats">1/3 participants</p>
+                    </div>`;
             });
-        }
 
-        window.addEventListener('DOMContentLoaded', (event) => {
-            selectDate('@Model.SelectedDate.ToString("yyyy-MM-dd")', null);
-        });
+            // Demo Invitation (Matching screenshot)
+            const invContainer = document.getElementById('invitationsContainer');
+            if(activities.some(a => a.Title.includes("Korean BBQ"))) {
+                invContainer.innerHTML = `
+                    <div class="invitation-item-card">
+                        <div class="inv-top">
+                            <span class="inv-title">✉ Korean BBQ Buffet - Tonight!</span>
+                            <span class="inv-status">Accepted</span>
+                        </div>
+                        <p class="inv-from">From <span class="blue-link">Sarah Chen</span></p>
+                        <p class="inv-time">Event: 7:00 PM</p>
+                    </div>`;
+            } else {
+                invContainer.innerHTML = '<p class="empty-msg">No invitations for this date.</p>';
+            }
+        }
     </script>
 }

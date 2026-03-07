@@ -1,154 +1,111 @@
-/* --- Layout & Container --- */
-.calendar-main-container {
+/* Layout & Base */
+.page-background {
+    background-color: #f8fafc; /* พื้นหลังสีเทาอ่อนตามรูป */
+    min-height: 100vh;
+    padding: 40px;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.main-content-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding-bottom: 50px;
 }
 
-/* ทำให้ Row หลักอยู่กึ่งกลาง */
-.justify-content-center {
-    display: flex;
-    justify-content: center;
-}
+.calendar-header h1 { font-size: 28px; font-weight: 800; color: #1e293b; margin: 0; }
+.calendar-header p { color: #64748b; margin-top: 8px; margin-bottom: 32px; }
 
-/* --- Calendar Grid System --- */
-.cal-grid {
+.calendar-layout-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr); /* แบ่ง 7 วันเท่าๆ กัน */
-    gap: 12px;
-    margin-bottom: 15px;
-    width: 100%;
+    grid-template-columns: 1fr 350px; /* ฝั่งขวาฟิกความกว้างตามรูป */
+    gap: 24px;
+    align-items: start;
 }
 
-.cal-header {
-    text-align: center;
-    font-weight: 700;
-    font-size: 0.8rem;
-    color: #94a3b8; /* สีเทาเข้มออกฟ้า */
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-/* --- Day Cell Design --- */
-.cal-day {
-    min-height: 110px;
-    background-color: #ffffff;
+.card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 32px;
     border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+/* Calendar Toolbar */
+.calendar-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+.month-title { font-size: 20px; font-weight: 700; color: #1e293b; margin: 0; }
+.nav-buttons a { text-decoration: none; color: #64748b; font-weight: bold; margin-left: 16px; font-size: 18px; }
+
+/* Calendar Grid */
+.days-header-grid { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 16px; }
+.days-header-grid div { text-align: center; color: #94a3b8; font-size: 14px; font-weight: 500; }
+
+.days-display-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+
+.cal-day {
+    min-height: 100px;
+    border: 1px solid #f1f5f9;
     border-radius: 12px;
-    padding: 10px;
+    padding: 12px;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    background: #fff;
+    transition: all 0.2s;
 }
 
-.cal-day:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    transform: translateY(-4px);
-    z-index: 10;
-}
+.cal-day.selected { border: 2px solid #3b82f6; background-color: #eff6ff; }
+.cal-day.not-current { opacity: 0.2; }
+.cal-day.today .day-number { color: #3b82f6; font-weight: 800; }
 
-/* วันที่ที่ไม่ได้อยู่ในเดือนปัจจุบัน */
-.cal-day.not-current-month {
-    background-color: #f8fafc;
-    color: #cbd5e1;
-    border-color: #f1f5f9;
-}
+.day-number { display: block; text-align: center; font-size: 15px; font-weight: 600; color: #475569; margin-bottom: 8px; }
 
-/* วันที่ถูกเลือก */
-.cal-day.selected-day {
-    border: 2px solid #3b82f6;
-    background-color: #eff6ff;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-}
-
-.date-number {
-    text-align: right;
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
-
-/* --- Event Elements --- */
 .event-pill {
-    font-size: 0.7rem;
-    padding: 4px 8px;
-    border-radius: 6px;
-    margin-bottom: 5px;
-    color: #ffffff;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+    margin-bottom: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-weight: 600;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Category Colors */
-.cat-sports   { background: linear-gradient(135deg, #3b82f6, #2563eb) !important; }
-.cat-dining   { background: linear-gradient(135deg, #f97316, #ea580c) !important; }
-.cat-social   { background: linear-gradient(135deg, #a855f7, #9333ea) !important; }
-.cat-shopping { background: linear-gradient(135deg, #ec4899, #db2777) !important; }
-.cat-study    { background: linear-gradient(135deg, #22c55e, #16a34a) !important; }
-.cat-others   { background: linear-gradient(135deg, #64748b, #475569) !important; }
+/* Details Panel (Right Side) */
+.detail-date { font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 24px; }
+.section-label { font-size: 14px; font-weight: 700; color: #475569; margin-bottom: 16px; }
 
-/* --- Right Panel (Activity Details) --- */
-.activity-card {
+.activity-item-card {
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     padding: 16px;
-    margin-bottom: 15px;
-    background-color: #ffffff;
-    transition: all 0.2s ease;
-    border-left: 4px solid #3b82f6; /* เพิ่มเส้นสีด้านข้างให้ดูเด่น */
+    margin-bottom: 16px;
 }
 
-.activity-card:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transform: scale(1.01);
-}
+.category-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; color: white; display: inline-block; margin-bottom: 8px; }
+.activity-name { font-size: 14px; font-weight: 700; color: #1e293b; margin: 0 0 4px 0; }
+.activity-owner, .activity-stats { font-size: 12px; color: #64748b; margin: 0; }
 
-.activity-badge {
-    display: inline-block;
-    font-size: 0.7rem;
-    padding: 3px 10px;
-    border-radius: 20px;
-    margin-bottom: 10px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
+/* Invitations */
+.invitation-item-card {
+    background-color: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 16px;
 }
+.inv-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.inv-title { font-size: 13px; font-weight: 600; color: #1e293b; }
+.inv-status { font-size: 11px; color: #166534; background: #dcfce7; padding: 2px 8px; border-radius: 99px; }
+.inv-from, .inv-time { font-size: 12px; color: #64748b; margin: 4px 0; }
+.blue-link { color: #3b82f6; font-weight: 500; }
 
-/* ปรับแต่ง Scrollbar สำหรับรายละเอียดกิจกรรม */
-#activitiesContainer {
-    max-height: 600px;
-    overflow-y: auto;
-    padding-right: 5px;
-}
+/* Legend Section */
+.legend-section { margin-top: 40px; border-top: 1px solid #f1f5f9; padding-top: 24px; }
+.legend-section h3 { font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 16px; }
+.legend-items { display: flex; gap: 20px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; font-size: 13px; color: #475569; }
+.dot { width: 12px; height: 12px; border-radius: 4px; margin-right: 8px; }
 
-#activitiesContainer::-webkit-scrollbar {
-    width: 5px;
-}
-
-#activitiesContainer::-webkit-scrollbar-thumb {
-    background-color: #e2e8f0;
-    border-radius: 10px;
-}
-
-/* --- Responsive Adjustments --- */
-@media (max-width: 991.98px) {
-    .cal-day {
-        min-height: 80px;
-    }
-    
-    .date-number {
-        font-size: 0.85rem;
-    }
-
-    .event-pill {
-        font-size: 0.6rem;
-        padding: 2px 4px;
-    }
-}
+/* Category Colors (Match Screenshot) */
+.sports, .cat-sports { background-color: #3b82f6; }
+.dining, .cat-dining { background-color: #f97316; }
+.social, .cat-social { background-color: #a855f7; }
+.shopping, .cat-shopping { background-color: #ec4899; }
+.study, .cat-study { background-color: #22c55e; }
+.others, .cat-others { background-color: #64748b; }
