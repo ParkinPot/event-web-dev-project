@@ -237,6 +237,38 @@ namespace event_web_dev_project.Migrations
                             PostedBy = "Sarah Chen",
                             Status = "Open",
                             Title = "Looking for Football Teammates - Sunday Match"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ApplicationMode = "Overflow allowed - Owner selects",
+                            Category = "Sports",
+                            CurrentMembers = 2,
+                            Description = "We need 3 more players for a friendly basketball match this Sunday at Central Park. All skill levels welcome! We play 7v7 format.",
+                            ExpiresAt = new DateTime(2026, 2, 15, 12, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            Location = "Central Park, Field 3",
+                            MaxMembers = 3,
+                            PostedAt = new DateTime(2026, 2, 11, 0, 0, 0, 0, DateTimeKind.Utc),
+                            PostedBy = "Alex Johnson",
+                            Status = "Open",
+                            Title = "Looking for basketball Teammates - Sunday Match"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ApplicationMode = "Overflow allowed - Owner selects",
+                            Category = "Sports",
+                            CurrentMembers = 2,
+                            Description = "We need 3 more players for a friendly valleyball match this Sunday at Central Park. All skill levels welcome! We play 7v7 format.",
+                            ExpiresAt = new DateTime(2026, 2, 15, 12, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            Location = "Central Park, Field 3",
+                            MaxMembers = 3,
+                            PostedAt = new DateTime(2026, 2, 11, 0, 0, 0, 0, DateTimeKind.Utc),
+                            PostedBy = "Alex Johnson",
+                            Status = "Open",
+                            Title = "Looking for valleyball Teammates - Sunday Match"
                         });
                 });
 

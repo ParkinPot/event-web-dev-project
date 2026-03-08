@@ -23,13 +23,90 @@ public class HomeController : Controller
             .OrderByDescending(p => p.PostedAt)
             .ToListAsync();
 
+        var locations = await _db.ActivityPosts
+        .Where(p => !p.IsDeleted && p.Status == "Open")
+        .Select(p => p.Location)
+        .Distinct()
+        .OrderBy(l => l)
+        .ToListAsync();
+
+        ViewBag.Locations = locations;
+
         return View(posts);
     }
+    [HttpGet]
+    public async Task<IActionResult> Search(string? q, string? categories  ,string? location,
+    string? sortBy, string? dateRange, string? statusFilter, bool availableOnly = false)
+    {
+        var query = _db.ActivityPosts
+            .Where(p => !p.IsDeleted)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(q))
+            query = query.Where(p => 
+                EF.Functions.ILike(p.Title, $"%{q}%") || 
+                EF.Functions.ILike(p.Description, $"%{q}%"));
+
+        if (!string.IsNullOrWhiteSpace(categories))
+        {
+            var catList = categories.Split(',').Select(c => c.Trim()).ToList();
+            query = query.Where(p => catList.Contains(p.Category));
+        }
+        if (!string.IsNullOrWhiteSpace(location))
+            query = query.Where(p => p.Location == location);
+
+        if (!string.IsNullOrWhiteSpace(statusFilter))
+        {
+            var statusList = statusFilter.Split(',').Select(s => s.Trim()).ToList();
+            query = query.Where(p => statusList.Contains(p.Status));
+        }
+
+
+        var now = DateTime.UtcNow;
+        query = dateRange switch
+        {
+            "today" => query.Where(p => p.ExpiresAt >= now && p.ExpiresAt < now.AddDays(1)),
+            "week"  => query.Where(p => p.ExpiresAt >= now && p.ExpiresAt < now.AddDays(7)),
+            "month" => query.Where(p => p.ExpiresAt >= now && p.ExpiresAt < now.AddDays(30)),
+            _       => query
+        };
+
+        query = sortBy switch
+        {
+            "expiring" => query.OrderBy(p => p.ExpiresAt),
+            "members"  => query.OrderByDescending(p => p.CurrentMembers),
+            _          => query.OrderByDescending(p => p.PostedAt)  // newest
+        };
+        
+        var results = await query
+            .Select(p => new {
+                id             = p.Id,
+                title          = p.Title,
+                category       = p.Category,
+                description    = p.Description,
+                location       = p.Location,
+                postedBy       = p.PostedBy,
+                postedAt       = p.PostedAt.ToString("MMM d, yyyy"),
+                expiresAt      = p.ExpiresAt.ToString("MMM d, yyyy"),
+                maxMembers     = p.MaxMembers,
+                currentMembers = p.CurrentMembers,
+                spotsLeft      = p.SpotsLeft,
+                status         = p.Status
+            })
+            .ToListAsync();
+
+        return Json(results);
+    }
+        
+
+    
+    
 
     public IActionResult Privacy()
     {
         return View();
     }
+    
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
@@ -37,3 +114,5 @@ public class HomeController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }
+
+
