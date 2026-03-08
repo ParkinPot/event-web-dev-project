@@ -22,6 +22,15 @@ const setMinDate = () => {
 };
 setMinDate();
 
+dateInput.addEventListener('input', function () {
+    if (!dateInput.value) return;
+    const parts = dateInput.value.split('-'); // "yyyy-MM-dd"
+    if (parts[0] && parts[0].length > 4) {
+        parts[0] = parts[0].slice(0, 4);
+        dateInput.value = parts.join('-');
+    }
+});
+
 function triggerError(inputElement) {
     inputElement.classList.add('input-error');
     setTimeout(() => inputElement.classList.remove('input-error'), 3000);

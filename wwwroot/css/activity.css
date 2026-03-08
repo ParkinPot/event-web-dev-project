@@ -497,3 +497,18 @@
     background: rgba(255,255,255,0.15);
     color: #fff;
 }
+
+@media (max-width: 640px) {
+    .activity-layout {
+        flex-direction: column;
+    }
+
+    .activity-card {
+        order: 1;
+    }
+
+    .sidebar {
+        width: 100%;
+        order: 2;
+    }
+}

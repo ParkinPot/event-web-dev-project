@@ -1,3 +1,6 @@
+@model event_web_dev_project.Models.ActivityPost
+@using System.Text.Json
+
 @{
     ViewData["Title"] = "Activity Details";
 }
@@ -14,7 +17,37 @@
         </p>
     </noscript>
 </div>
+<form id="af-form">@Html.AntiForgeryToken()</form>
 
 @section Scripts {
+    <script>
+        window.eventData = @Html.Raw(JsonSerializer.Serialize(new {
+            id             = Model.Id,
+            title          = Model.Title,
+            category       = Model.Category,
+            description    = Model.Description,
+            location       = Model.Location,
+            postedBy       = Model.PostedBy,
+            ownerId        = Model.OwnerId,
+            postedAt       = Model.PostedAt.ToString("MMM d, yyyy"),
+            expiresAt      = Model.ExpiresAt.ToString("MMM d, yyyy"),
+            maxMembers     = Model.MaxMembers,
+            currentMembers = Model.CurrentMembers,
+            spotsLeft      = Model.SpotsLeft,
+            status         = Model.Status,
+            applicationsCount = Model.Applications?.Count ?? 0,
+            applicationMode = Model.ApplicationMode.ToString(),
+            applications   = Model.Applications?.Select(a => new {
+                id            = a.Id,
+                applicantName = a.ApplicantName,
+                message       = a.Message,
+                appliedAt     = a.AppliedAt.ToString("MMM d, yyyy"),
+                status        = a.Status.ToString()
+             })
+        }));
+
+        // Pass anti-forgery token so JS can POST securely
+        window.antiForgeryToken = document.querySelector('#af-form input[name="__RequestVerificationToken"]').value;
+    </script>
     <script src="~/js/activity.js" asp-append-version="true"></script>
 }

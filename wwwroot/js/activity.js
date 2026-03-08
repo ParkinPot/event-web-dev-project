@@ -1,69 +1,38 @@
-/**
- * activity.js
- * Handles the 5 use-case states for the Activity Detail / Join page:
- *
- *  1. "apply"    – Visitor can see the apply form (not yet applied)
- *  2. "pending"  – Visitor already applied; application is pending review
- *                  (with chat panel open showing the pending applicant's chat)
- *  3. "accepted" – Visitor's application was accepted
- *  4. "rejected" – Visitor's application was rejected
- *  5. "owner"    – Current user is the event owner — no apply form, just sees applications
- *
- * The active state is controlled by the `data-state` attribute on <main id="activity-root">.
- * A dev-switcher pill at the bottom lets you flip between states for demo purposes.
- */
-
 (function () {
     'use strict';
+    if (!window.eventData) {
+        console.error("eventData not found");
+        return;
+    }
+    let ACTIVITY = mapActivity(window.eventData);
+    let APPLICATIONS = window.eventData.applications || [];
 
-    /* ================================================================
-       MOCK DATA
-       Replace these objects with real API calls when connecting
-       to a back-end. ACTIVITY holds the event details; APPLICATIONS
-       holds the list of applicants shown in the right sidebar.
-       ================================================================ */
-    const ACTIVITY = {
-        id: 1,
-        category: 'dining',
-        categoryLabel: 'Dining',
-        status: 'open',
-        title: 'Korean BBQ Buffet – Tonight!',
-        poster: { name: 'Sarah Chen', href: '#' },
-        postedAt: 'Feb 12, 2026',
-        description: 'Found an amazing Korean BBQ place with a great group deal. Need 3 more people to get the discount. Tonight at 7 PM!',
-        location: 'Seoul Garden BBQ, Downtown',
-        expires: 'Feb 12, 2026 6:00 PM',
-        membersJoined: 1,
-        membersTotal: 3,
-        applicationMode: 'First-come, first-served',
-    };
 
-    const APPLICATIONS = [
-        {
-            id: 'a1',
-            name: 'Mike Rodriguez',
-            date: 'Feb 10, 6:00 PM',
-            message: 'I love Korean BBQ! What time?',
-            status: 'accepted',
-            chatMessages: [
-                { side: 'left', text: 'I love Korean BBQ! What time?', time: 'Feb 10, 6:01 PM' },
-                { side: 'right', text: 'We meet at 7 PM sharp!', time: 'Feb 10, 6:05 PM' },
-            ],
-        },
-        {
-            id: 'a2',
-            name: 'Alex Johnson',
-            date: 'Feb 14, 7:17 PM',
-            message: 'nice',
-            status: 'pending',
-            chatMessages: [
-                { side: 'right', text: 'Alex Johnson\nnice', time: 'Feb 24, 7:18 PM' },
-            ],
-        },
-    ];
+    function mapActivity(data) {
+        if (!data) return null;
+
+        return {
+            id: data.id,
+            category: (data.category || '').toLowerCase(),
+            categoryLabel: data.category,
+            status: (data.status || '').toLowerCase(),
+            title: data.title,
+            poster: {
+                name: data.postedBy,
+                href: data.ownerId ? '/Profile/Index?userId=' + data.ownerId : '#'
+            },
+            postedAt: data.postedAt,
+            description: data.description,
+            location: data.location,
+            expires: data.expiresAt,
+            membersJoined: data.currentMembers,
+            membersTotal: data.maxMembers,
+            applicationMode: data.applicationMode
+        };
+    }
 
     /* ---- State ---- */
-    let currentState = getInitialState();
+    let currentState = APPLICATIONS.length > 0 ? APPLICATIONS[0].status.toLowerCase() : 'apply'; // default to 'apply' if no applications
     let openChatId = null; // which application's chat is expanded
     let chatOpen = false; // whether the "Chat with Organizer" panel is open (pending/accepted view)
 
@@ -74,12 +43,6 @@
     });
 
     /* ---- Helpers ---- */
-    function getInitialState() {
-        const params = new URLSearchParams(window.location.search);
-        const s = params.get('state');
-        const valid = ['apply', 'pending', 'accepted', 'rejected', 'owner'];
-        return valid.includes(s) ? s : 'apply';
-    }
 
     function setState(s) {
         currentState = s;
@@ -90,10 +53,6 @@
         const url = new URL(window.location);
         url.searchParams.set('state', s);
         history.replaceState({}, '', url);
-        // highlight dev switcher
-        document.querySelectorAll('.dev-switcher button').forEach(function (btn) {
-            btn.classList.toggle('active', btn.dataset.state === s);
-        });
     }
 
     /* ---- Render ---- */
@@ -188,7 +147,7 @@
             case 'accepted': return buildBanner('accepted');
             case 'rejected': return buildBanner('rejected');
             case 'owner': return ''; // owner sees no footer
-            default: return '';
+            default: return currentState;
         }
     }
 
@@ -258,9 +217,6 @@
     }
 
     function buildApplicationsList() {
-        // In owner view: show all apps with open-chat toggles
-        // In pending view: show pending app with open-chat toggle
-        // In others: show relevant apps (accepted visible, pending own shown)
         let visible = APPLICATIONS;
 
         return visible.map(function (app) {
@@ -276,17 +232,17 @@
             const isOpen = openChatId === app.id;
 
             return `
-            <article class="application-item" data-appid="${app.id}">
+            <article class="application-item" data-appid="${app.Id}">
                 <div class="application-item-top">
                     <div>
-                        <span class="applicant-name">${app.name}</span>
-                        <div class="applicant-date">${app.date}</div>
+                        <span class="applicant-name">${app.applicantName}</span>
+                        <div class="applicant-date">${app.appliedAt}</div>
                     </div>
                     <span class="app-status ${statusClass}">${cap(app.status)}</span>
                 </div>
                 <p class="applicant-message">${app.message}</p>
                 ${showChatToggle ? `
-                <button class="btn-open-chat" data-chatid="${app.id}">
+                <button class="btn-open-chat" data-chatid="${app.Id}">
                     ${iconChat()} ${isOpen ? 'Hide Chat' : 'Open Chat'}
                     ${isOpen ? '' : ''}
                 </button>` : ''}
@@ -358,9 +314,40 @@
         /* Submit application */
         const submitBtn = document.getElementById('btn-submit-apply');
         if (submitBtn) {
-            submitBtn.addEventListener('click', function () {
-                showToast('SUCCESS', 'Application submitted successfully! The organizer will review your application.');
-                setState('pending');
+            submitBtn.addEventListener('click', async function () {
+                const message = document.getElementById('apply-message').value.trim();
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting...';
+
+                try {
+                    const response = await fetch('/Event/SubmitApplication', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': window.antiForgeryToken
+                        },
+                        body: JSON.stringify({
+                            postId:        window.eventData.id,
+                            applicantName: 'Me',
+                            message:       message
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showToast('SUCCESS', 'Application submitted! The organizer will review it.');
+                        setState('Pending');
+                    } else {
+                        showToast('ERROR', result.error ?? 'Something went wrong');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Submit Application';
+                    }
+                } catch (err) {
+                    showToast('ERROR', 'Network error, please try again');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Application';
+                }
             });
         }
 
@@ -473,32 +460,6 @@
        Remove this function (and its call in the DOMContentLoaded
        handler above) before going to production.
        ================================================================ */
-    function buildDevSwitcher() {
-        const states = [
-            { key: 'apply', label: '📝 Apply Form' },
-            { key: 'pending', label: '⏳ Pending' },
-            { key: 'accepted', label: '✓ Accepted' },
-            { key: 'rejected', label: '✗ Rejected' },
-            { key: 'owner', label: '👑 Owner View' },
-        ];
-
-        const switcher = document.createElement('nav');
-        switcher.className = 'dev-switcher';
-        switcher.setAttribute('aria-label', 'Demo state switcher');
-
-        states.forEach(function (s) {
-            const btn = document.createElement('button');
-            btn.textContent = s.label;
-            btn.dataset.state = s.key;
-            btn.addEventListener('click', function () { setState(s.key); });
-            if (s.key === currentState) btn.classList.add('active');
-            switcher.appendChild(btn);
-        });
-
-        document.body.appendChild(switcher);
-    }
-
-    /* ---- SVG Icons ---- */
     function iconPin() { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>'; }
     function iconUsers() { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>'; }
     function iconCalendar() { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>'; }
@@ -510,5 +471,8 @@
 
     /* ---- Utility ---- */
     function cap(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
+
+    /* ---- SVG Icons ---- */
+    
 
 })();

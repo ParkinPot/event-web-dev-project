@@ -8,18 +8,16 @@ namespace event_web_dev_project.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly AppDbContext _db;
+    private readonly AppDbContext _context;
 
-    public HomeController(AppDbContext db)
+    public HomeController(AppDbContext context)
     {
-        _db = db;
+        _context = context;
     }
 
     public async Task<IActionResult> Index()
     {
-        // Load only open, non-deleted posts
-        // Include applications so we can show applicant counts
-        var posts = await _db.ActivityPosts
+        var posts = await _context.ActivityPosts
             .Where(p => !p.IsDeleted && p.Status == "Open")
             .Include(p => p.Applications)
             .OrderByDescending(p => p.PostedAt)

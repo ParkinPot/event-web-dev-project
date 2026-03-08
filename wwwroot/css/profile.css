@@ -1,0 +1,811 @@
+:root {
+    --primary-blue: #2563eb;
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --bg-light: #f9fafb;
+    --border-color: #e5e7eb;
+    --white: #ffffff;
+    --star-gold: #fbbf24;
+    --tag-bg: #eff6ff;
+    --tag-text: #3b82f6;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    line-height: 1.5;
+}
+
+.profile-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Profile Header Card */
+.profile-header-card {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.profile-main-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    position: relative;
+}
+
+.avatar-container {
+    flex-shrink: 0;
+}
+
+.avatar-placeholder {
+    width: 100px;
+    height: 100px;
+    background-color: var(--primary-blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+}
+
+.avatar-placeholder svg {
+    width: 50px;
+    height: 50px;
+}
+
+.user-details {
+    flex-grow: 1;
+}
+
+.user-details h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.user-details .email {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+
+.rating-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.stars {
+    color: var(--star-gold);
+    font-size: 1.1rem;
+}
+
+.rating-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.quick-stats {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.edit-profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background-color: #111827;
+    color: var(--white);
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.edit-profile-btn:hover {
+    background-color: #1f2937;
+}
+
+.btn-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Sections in Card */
+.profile-sections {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.section {
+    flex: 1 1 250px;
+}
+
+.section h3 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.tag-list,
+.interest-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag-chip,
+.interest-chip {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.tag-chip {
+    background-color: var(--tag-bg);
+    color: var(--tag-text);
+}
+
+/* Interest Colors */
+.interest-chip.sports {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.interest-chip.dining {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.interest-chip.social {
+    background: #f3e8ff;
+    color: #7e22ce;
+}
+
+/* Profile Footer / Toggle */
+.profile-footer {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* Content Grid */
+.profile-content-grid {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.content-box {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.history-section {
+    flex: 3 1 500px;
+}
+
+.right-column-stack {
+    flex: 2 1 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.header-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--text-muted);
+}
+
+.section-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* Activity Items */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.activity-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.activity-info h4 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.activity-meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.badge {
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge.organized {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge.participated {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.category-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.category-tag.sports {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.category-tag.dining {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.category-tag.social {
+    background: #f3e8ff;
+    color: #7e22ce;
+}
+
+.category-tag.studying {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.category-tag.food {
+    background: #fce7f3;
+    color: #9d174d;
+}
+
+.category-tag.board.games {
+    background: #dcfce7;
+    color: #166534;
+}
+
+/* Activity Cards (Upcoming) */
+.activity-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.activity-card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.activity-card-header h4 {
+    font-size: 0.95rem;
+    flex: 1;
+}
+
+.activity-card-details {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Reviews */
+.review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.review-item {
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.review-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.reviewer-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.review-stars {
+    color: var(--star-gold);
+}
+
+.review-context {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.review-text {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.review-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* ---- Edit Mode Styles ---- */
+.edit-mode-container {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.edit-avatar-wrapper {
+    position: relative;
+}
+
+.clickable-avatar {
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+
+.upload-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.clickable-avatar:hover .upload-overlay {
+    opacity: 1;
+}
+
+.camera-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.about-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.badge-lock {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-left: 0.5rem;
+}
+
+.edit-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-save {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-save:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-cancel-edit {
+    background-color: white;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-cancel-edit:hover {
+    background-color: var(--bg-light);
+}
+
+/* Tag Manager */
+.tag-manager {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.edit-tag-list {
+    min-height: 36px;
+}
+
+.tag-chip-edit {
+    background-color: var(--tag-bg);
+    color: var(--tag-text);
+    padding: 0.3rem 0.6rem;
+    padding-right: 0.4rem;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn-remove-tag {
+    background: none;
+    border: none;
+    color: var(--tag-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.btn-remove-tag:hover {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+.tag-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.tag-input-group input {
+    flex: 1;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.btn-add {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.full-width {
+    flex: 1 1 100% !important;
+}
+
+.helper-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .edit-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-save,
+    .btn-cancel-edit {
+        width: 100%;
+    }
+    .edit-profile-btn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.8rem;
+        flex-shrink: 1;
+        min-width: 0;
+        white-space: normal;
+        text-align: center;
+        order: 999;
+        width: 100%;
+        justify-content: center;
+        margin-bottom:2rem;
+    }
+
+    .edit-profile-btn .btn-icon {
+        display: none;
+    }
+    .profile-main-info {
+        flex-wrap: wrap;
+    }
+}
+/* ===== Review Modal (profile page) ===== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-box {
+    background: #fff;
+    border-radius: 12px;
+    padding: 28px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    animation: modalFadeIn 0.2s ease;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.95) translateY(8px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    color: #9ca3af;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+.modal-close-btn:hover { color: #111827; }
+
+/* Star Picker */
+.star-picker {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.star-pick {
+    font-size: 2rem;
+    color: #d1d5db;
+    cursor: pointer;
+    transition: color 0.15s, transform 0.15s;
+    user-select: none;
+}
+
+.star-pick:hover,
+.star-pick.active {
+    color: #f59e0b;
+    transform: scale(1.15);
+}
+
+.star-label-text {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 16px;
+}
+
+.review-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    resize: vertical;
+    min-height: 80px;
+    margin-bottom: 16px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.review-textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn-modal-cancel {
+    padding: 8px 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 7px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.88rem;
+    transition: background 0.15s;
+}
+
+.btn-modal-cancel:hover { background: #f3f4f6; }
+
+.btn-modal-submit {
+    padding: 8px 18px;
+    border: none;
+    border-radius: 7px;
+    background: #3b82f6;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-modal-submit:hover { background: #2563eb; }
+
+.btn-rate-done {
+    font-size: 0.88rem;
+    color: #16a34a;
+    font-weight: 500;
+    padding: 8px 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#edit-interest-list .interest-chip {
+    cursor: pointer;
+}
+
+#display-about {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.interest-chip.sports.active {
+    background: #0369a1;
+    color: #fff;
+}
+
+.interest-chip.dining.active {
+    background: #c2410c;
+    color: #fff;
+}
+
+.interest-chip.social.active {
+    background: #7e22ce;
+    color: #fff;
+}
+
+
+
+/* Animations */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%       { transform: translateX(-6px); }
+    75%       { transform: translateX(6px); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
