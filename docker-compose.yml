@@ -26,6 +26,7 @@ services:
       - .:/src
       - app_obj:/src/obj    # ← named, gets reused
       - app_bin:/src/bin    # ← named, gets reused
+      - app_keys:/src/DataProtection-Keys
     environment:
       ConnectionStrings__DefaultConnection: >
         Host=db;Port=5432;Database=EventWebDb;
@@ -38,3 +39,4 @@ volumes:
   pgdata:
   app_obj:    # ← add these two
   app_bin:
+  app_keys:
