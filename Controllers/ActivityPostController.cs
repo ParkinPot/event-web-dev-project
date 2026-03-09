@@ -20,8 +20,10 @@ public class ActivityPostController : Controller
     // GET /ActivityPost/Index
     public async Task<IActionResult> Index(int? id)
     {
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
         var allPosts = await _db.ActivityPosts
-            .Where(p => !p.IsDeleted)
+            .Where(p => !p.IsDeleted && p.OwnerId == currentUserId)
             .OrderByDescending(p => p.PostedAt)
             .ToListAsync();
 

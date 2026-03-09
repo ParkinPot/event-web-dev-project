@@ -67,7 +67,7 @@ function renderCards(data) {
         btnPrimary.classList.add('btn-primary');
         btnPrimary.textContent = 'Event Detail';
         btnPrimary.onclick = () => {
-            window.location.href = `/ActivityPost/Index?id=${event.id}`;
+            window.location.href = `/Event/Join?id=${event.id}`;
         };
 
         cardFooter.append(metaInfo, btnPrimary);
