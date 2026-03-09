@@ -92,13 +92,12 @@
                                 id="btn-open-invite"
                                 aria-label="Invite @Model.DisplayName to an event"
                                 data-receiver-id="@Model.UserId"
-                                data-receiver-name="@Model.DisplayName"
-                                @(Model.HasPendingInvitation ? "disabled" : "")>
+                                data-receiver-name="@Model.DisplayName">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
                                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                                 <polyline points="22,6 12,13 2,6"/>
                             </svg>
-                            <span class="btn-invite-label">@(Model.HasPendingInvitation ? "Invitation Sent" : "Invite to Event")</span>
+                            <span class="btn-invite-label">Invite to Event</span>
                         </button>
                     </div>
                 }
@@ -518,6 +517,10 @@
             var ownedPosts   = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
                 Model.OwnedOpenPosts.Select(p => new { id = p.Id, title = p.Title })
             ));
+            var alreadyInvitedPostIds = new Set(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                Model.AlreadyInvitedPostIds
+            )));
+            var INVITED_SUFFIX = ' (Invited)';
 
             /* Build modal using DOM API to avoid XSS */
             var inviteModal = document.createElement('div');
@@ -563,17 +566,34 @@
                 ownedPosts.forEach(function (p) {
                     var opt = document.createElement('option');
                     opt.value = p.id;
-                    opt.textContent = p.title;
+                    opt.textContent = alreadyInvitedPostIds.has(p.id) ? p.title + INVITED_SUFFIX : p.title;
                     selectEl.appendChild(opt);
                 });
             }
+
+            /* Update submit button label when the selected event changes */
+            selectEl.addEventListener('change', function () {
+                var submitBtn = document.getElementById('invite-modal-submit');
+                var selectedId = parseInt(selectEl.value, 10);
+                if (!isNaN(selectedId) && selectedId > 0) {
+                    submitBtn.textContent = alreadyInvitedPostIds.has(selectedId) ? 'Invitation Sent' : 'Send Invitation';
+                } else {
+                    submitBtn.textContent = 'Send Invitation';
+                }
+            });
 
             function openInviteModal() {
                 document.getElementById('invite-message').value = '';
                 document.getElementById('invite-feedback').textContent = '';
                 var submitBtn = document.getElementById('invite-modal-submit');
                 submitBtn.disabled = ownedPosts.length === 0;
-                submitBtn.textContent = 'Send Invitation';
+                /* Reflect the already-invited state of the current selection */
+                var selectedId = parseInt(selectEl.value, 10);
+                if (!isNaN(selectedId) && selectedId > 0) {
+                    submitBtn.textContent = alreadyInvitedPostIds.has(selectedId) ? 'Invitation Sent' : 'Send Invitation';
+                } else {
+                    submitBtn.textContent = 'Send Invitation';
+                }
                 inviteModal.style.display = 'flex';
                 setTimeout(function () { inviteModal.style.opacity = '1'; }, 10);
             }
@@ -587,17 +607,26 @@
             inviteModal.addEventListener('click', function (e) { if (e.target === inviteModal) closeInviteModal(); });
 
             document.getElementById('invite-modal-submit').addEventListener('click', async function () {
-                var postId = document.getElementById('invite-post-select').value;
-                var message = document.getElementById('invite-message').value.trim();
+                var postId = parseInt(selectEl.value, 10);
+                var selectedOption = selectEl.options[selectEl.selectedIndex];
                 var feedback = document.getElementById('invite-feedback');
                 var submitBtn = document.getElementById('invite-modal-submit');
-                var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
 
                 if (!postId) {
                     feedback.style.color = '#dc2626';
                     feedback.textContent = 'Please select an event.';
                     return;
                 }
+
+                /* Already invited for this event — show toast and close */
+                if (alreadyInvitedPostIds.has(postId)) {
+                    closeInviteModal();
+                    showAlreadySentToast(selectedOption.textContent.replace(INVITED_SUFFIX, ''));
+                    return;
+                }
+
+                var message = document.getElementById('invite-message').value.trim();
+                var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
 
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Sending…';
@@ -616,13 +645,10 @@
                     });
                     var result = await resp.json();
                     if (result.success) {
+                        /* Mark this event as invited locally */
+                        alreadyInvitedPostIds.add(postId);
+                        if (selectedOption) selectedOption.textContent += INVITED_SUFFIX;
                         closeInviteModal();
-                        var inviteBtn = document.getElementById('btn-open-invite');
-                        if (inviteBtn) {
-                            inviteBtn.disabled = true;
-                            var labelSpan = inviteBtn.querySelector('.btn-invite-label');
-                            if (labelSpan) labelSpan.textContent = 'Invitation Sent';
-                        }
                         showInviteToast();
                     } else {
                         feedback.style.color = '#dc2626';
@@ -639,14 +665,22 @@
             });
 
             var openBtn = document.getElementById('btn-open-invite');
-            if (openBtn && !openBtn.disabled) openBtn.addEventListener('click', openInviteModal);
+            if (openBtn) openBtn.addEventListener('click', openInviteModal);
 
             function showInviteToast() {
+                showToast('Invitation sent to ' + receiverName + '!');
+            }
+
+            function showAlreadySentToast(eventTitle) {
+                showToast('Invitation already sent for "' + eventTitle + '"');
+            }
+
+            function showToast(text) {
                 var existing = document.getElementById('invite-toast');
                 if (existing) existing.remove();
                 var el = document.createElement('div');
                 el.id = 'invite-toast';
-                el.textContent = 'Invitation sent to ' + receiverName + '!';
+                el.textContent = text;
                 el.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);' +
                     'background:#111827;color:#fff;padding:10px 20px;border-radius:8px;' +
                     'font-size:0.88rem;font-weight:500;z-index:9999;' +

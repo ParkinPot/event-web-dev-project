@@ -148,7 +148,7 @@ body {
     background-color: #2563eb;
 }
 
-.invite-btn:hover:not(:disabled) {
+.invite-btn:hover {
     background-color: #1d4ed8;
 }
 

@@ -48,6 +48,6 @@ public class ProfileViewModel
     /// <summary>Open posts owned by the current (viewing) user — used to populate the Invite to Event dropdown.</summary>
     public List<ActivityPost> OwnedOpenPosts { get; set; } = new List<ActivityPost>();
 
-    /// <summary>Whether the current user has already sent a pending invitation to this profile user.</summary>
-    public bool HasPendingInvitation { get; set; } = false;
+    /// <summary>Post IDs for which the current user has already sent a pending invitation to this profile user.</summary>
+    public HashSet<int> AlreadyInvitedPostIds { get; set; } = new HashSet<int>();
 }
