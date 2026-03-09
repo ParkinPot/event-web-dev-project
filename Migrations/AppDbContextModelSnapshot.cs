@@ -162,6 +162,9 @@ namespace event_web_dev_project.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("ActivityDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("ApplicationMode")
                         .IsRequired()
                         .HasMaxLength(100)
