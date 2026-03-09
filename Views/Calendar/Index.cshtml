@@ -1,0 +1,127 @@
+@model event_web_dev_project.Models.CalendarViewModel
+@{
+    ViewData["Title"] = "Activity Calendar";
+    var monthName = new DateTime(Model.CurrentYear, Model.CurrentMonth, 1).ToString("MMMM yyyy");
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/calendar.css" />
+}
+
+<div class="page-background">
+    <div class="main-content-container">
+        <header class="calendar-header">
+            <h1>Activity Calendar</h1>
+            <p>View activities by their expiration dates</p>
+        </header>
+
+        <div class="calendar-layout-grid">
+            <section class="card calendar-main-card">
+                <div class="calendar-toolbar">
+                    <h2 class="month-title">@monthName</h2>
+                    <div class="nav-buttons">
+                        <a href="@Url.Action("Index", "Calendar", new { year = Model.CurrentMonth == 1 ? Model.CurrentYear - 1 : Model.CurrentYear, month = Model.CurrentMonth == 1 ? 12 : Model.CurrentMonth - 1 })">&lt;</a>
+                        <a href="@Url.Action("Index", "Calendar", new { year = Model.CurrentMonth == 12 ? Model.CurrentYear + 1 : Model.CurrentYear, month = Model.CurrentMonth == 12 ? 1 : Model.CurrentMonth + 1 })">&gt;</a>
+                    </div>
+                </div>
+
+                <div class="days-header-grid">
+                    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                </div>
+
+                <div class="days-display-grid">
+                    @foreach (var day in Model.Days)
+                    {
+                        var dayClass = day.IsCurrentMonth ? "cal-day" : "cal-day not-current";
+                        if (day.Date.Date == Model.SelectedDate.Date) dayClass += " selected";
+                        if (day.Date.Date == DateTime.Today) dayClass += " today";
+
+                        <div class="@dayClass" onclick="selectDate('@day.Date.ToString("yyyy-MM-dd")', this)">
+                            <span class="day-number">@day.Date.Day</span>
+                            <div class="event-list">
+                                @foreach (var ev in day.Events.Take(2))
+                                {
+                                    <div class="event-pill @ev.CssColorClass" title="@ev.Title">@ev.Title</div>
+                                }
+                            </div>
+                            @if (day.Events.Count > 2)
+                            {
+                                <span class="more-text">+@(day.Events.Count - 2) more</span>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <footer class="legend-section">
+                    <h3>Category Legend</h3>
+                    <div class="legend-items">
+                        <div class="legend-item"><span class="dot sports"></span> Sports</div>
+                        <div class="legend-item"><span class="dot dining"></span> Dining</div>
+                        <div class="legend-item"><span class="dot social"></span> Social</div>
+                        <div class="legend-item"><span class="dot shopping"></span> Shopping</div>
+                        <div class="legend-item"><span class="dot study"></span> Study</div>
+                        <div class="legend-item"><span class="dot others"></span> Others</div>
+                    </div>
+                </footer>
+            </section>
+
+            <aside class="card details-card">
+                <h2 id="detailDateLabel" class="detail-date">@Model.SelectedDate.ToString("MMMM dd, yyyy")</h2>
+                
+                <div class="detail-section">
+                    <p class="section-label">Activities</p>
+                    <div id="activitiesContainer"></div>
+                </div>
+
+                <div class="detail-section">
+                    <p class="section-label invitation-header">✉ Your Invitations</p>
+                    <div id="invitationsContainer"></div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const allEvents = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.AllEventsThisMonth));
+
+        function selectDate(dateString, element) {
+            document.querySelectorAll('.cal-day').forEach(el => el.classList.remove('selected'));
+            if (element) element.classList.add('selected');
+
+            const dateObj = new Date(dateString);
+            document.getElementById('detailDateLabel').innerText = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+            const activities = allEvents.filter(e => e.EventDate.startsWith(dateString));
+            const container = document.getElementById('activitiesContainer');
+            container.innerHTML = activities.length ? '' : '<p class="empty-msg">No activities scheduled.</p>';
+
+            activities.forEach(ev => {
+                container.innerHTML += `
+                    <div class="activity-item-card">
+                        <span class="category-tag ${ev.CssColorClass}">${ev.Category}</span>
+                        <h4 class="activity-name">${ev.Title}</h4>
+                        <p class="activity-owner">by ${ev.Author}</p>
+                        <p class="activity-stats">1/3 participants</p>
+                    </div>`;
+            });
+
+            // Demo Invitation (Matching screenshot)
+            const invContainer = document.getElementById('invitationsContainer');
+            if(activities.some(a => a.Title.includes("Korean BBQ"))) {
+                invContainer.innerHTML = `
+                    <div class="invitation-item-card">
+                        <div class="inv-top">
+                            <span class="inv-title">✉ Korean BBQ Buffet - Tonight!</span>
+                            <span class="inv-status">Accepted</span>
+                        </div>
+                        <p class="inv-from">From <span class="blue-link">Sarah Chen</span></p>
+                        <p class="inv-time">Event: 7:00 PM</p>
+                    </div>`;
+            } else {
+                invContainer.innerHTML = '<p class="empty-msg">No invitations for this date.</p>';
+            }
+        }
+    </script>
+}
