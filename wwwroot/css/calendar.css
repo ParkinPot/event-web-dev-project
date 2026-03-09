@@ -109,3 +109,64 @@
 .shopping, .cat-shopping { background-color: #ec4899; }
 .study, .cat-study { background-color: #22c55e; }
 .others, .cat-others { background-color: #64748b; }
+
+/* =============================================
+   Responsive - Phone only (max-width: 600px)
+   Right panel moves DOWN below the calendar
+   ============================================= */
+@media (max-width: 600px) {
+    .page-background {
+        padding: 12px;
+    }
+
+    /* Single column: calendar on top, right panel below */
+    .calendar-layout-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: 12px;
+    }
+
+    /* Shrink day cells so all 7 fit on a narrow phone screen */
+    .cal-day {
+        min-height: 44px;
+        padding: 4px 2px;
+        border-radius: 6px;
+    }
+
+    .day-number {
+        font-size: 11px;
+        margin-bottom: 2px;
+    }
+
+    .days-display-grid {
+        gap: 3px;
+    }
+
+    /* Hide event pills — cells too small on phone */
+    .event-pill {
+        display: none;
+    }
+
+    .more-text {
+        font-size: 9px;
+        color: #64748b;
+    }
+
+    .days-header-grid div {
+        font-size: 11px;
+    }
+
+    .calendar-header h1 {
+        font-size: 20px;
+    }
+
+    .month-title {
+        font-size: 16px;
+    }
+
+    .details-card {
+        width: 100%;
+    }
+}
