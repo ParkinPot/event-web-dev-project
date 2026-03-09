@@ -4,7 +4,8 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Identity;
 using event_web_dev_project.Models;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
+using event_web_dev_project.Services;
+using Microsoft.AspNetCore.DataProtection;
 
 // Add this at the very top of Program.cs before anything else
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -40,6 +41,11 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Login/Index";
 });
+
+builder.Services.AddHostedService<ExpiryCheckerService>();
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/src/DataProtection-Keys"));
 
 var app = builder.Build();
 
@@ -93,7 +99,6 @@ app.UseRouting();
 app.UseAuthentication();  // ← this was missing from your original file!
 app.UseAuthorization();
 
-app.UseStaticFiles();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Login}/{action=Index}/{id?}");
