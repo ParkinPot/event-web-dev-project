@@ -4,6 +4,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Identity;
 using event_web_dev_project.Models;
+using event_web_dev_project.Services;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 // Add this at the very top of Program.cs before anything else
@@ -40,6 +41,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Login/Index";
 });
+
+builder.Services.AddHostedService<ExpiryCheckerService>();
 
 var app = builder.Build();
 
