@@ -32,12 +32,6 @@ public class MyBoardController : Controller
             .OrderByDescending(p => p.PostedAt)
             .ToListAsync();
 
-        // Auto-mark expired posts
-        var now = DateTime.Now;
-        foreach (var post in myPosts.Where(p => p.Status == "Open" && p.ExpiresAt < now))
-            post.Status = "Expired";
-        await _db.SaveChangesAsync();
-
         var postsTab = new MyPostsTabModel
         {
             Posts = myPosts.Select(p => new PostCardModel
