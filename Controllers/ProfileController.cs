@@ -74,6 +74,22 @@ public class ProfileController : Controller
                 .FirstOrDefault(r => r.PostId == 0 && r.ReviewerId == currentUserId);
         }
 
+        // Load current user's open posts (for invite dropdown) and check for pending invitation
+        List<ActivityPost> ownedOpenPosts = new();
+        bool hasPendingInvitation = false;
+        if (!isOwner && currentUserId != null)
+        {
+            ownedOpenPosts = await _context.ActivityPosts
+                .Where(p => p.OwnerId == currentUserId && p.Status == "Open" && !p.IsDeleted)
+                .OrderByDescending(p => p.PostedAt)
+                .ToListAsync();
+
+            hasPendingInvitation = await _context.Invitations
+                .AnyAsync(i => i.SenderId == currentUserId
+                            && i.ReceiverId == profileUserId
+                            && i.Status == "Pending");
+        }
+
         var viewModel = new ProfileViewModel
         {
             UserId      = profileUserId,
@@ -98,6 +114,9 @@ public class ProfileController : Controller
 
             JoinedCount = await _context.PostApplications
                 .CountAsync(a => a.ApplicantId == profileUserId && a.Status == "Accepted"),
+
+            OwnedOpenPosts     = ownedOpenPosts,
+            HasPendingInvitation = hasPendingInvitation,
         };
 
         return View(viewModel);
