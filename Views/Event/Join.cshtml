@@ -1,5 +1,6 @@
 @model event_web_dev_project.Models.ActivityPost
 @using System.Text.Json
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = "Activity Details";
@@ -46,7 +47,22 @@
              })
         }));
 
-        // Pass anti-forgery token so JS can POST securely
+        @{
+            var currentUserId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+            var isLoggedIn    = currentUserId != null;
+            var isOwner       = isLoggedIn && Model.OwnerId == currentUserId;
+            var myApp         = isLoggedIn 
+                                ? Model.Applications?.FirstOrDefault(a => a.ApplicantId == currentUserId)
+                                : null;
+            var userState     = isOwner                         ? "owner"
+                            : myApp?.Status == "Accepted"     ? "accepted"
+                            : myApp?.Status == "Rejected"     ? "rejected"
+                            : myApp != null                   ? "pending"
+                            : isLoggedIn                      ? "apply"    // logged in, not applied yet
+                            : "login";                                     // guest
+        }
+        window.userState = '@userState';
+
         window.antiForgeryToken = document.querySelector('#af-form input[name="__RequestVerificationToken"]').value;
     </script>
     <script src="~/js/activity.js" asp-append-version="true"></script>

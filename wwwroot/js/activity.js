@@ -7,6 +7,8 @@
     let ACTIVITY = mapActivity(window.eventData);
     let APPLICATIONS = window.eventData.applications || [];
 
+    
+
 
     function mapActivity(data) {
         if (!data) return null;
@@ -27,12 +29,13 @@
             expires: data.expiresAt,
             membersJoined: data.currentMembers,
             membersTotal: data.maxMembers,
-            applicationMode: data.applicationMode
+            applicationMode: data.applicationMode,
+            applications: data.applications || []
         };
     }
 
     /* ---- State ---- */
-    let currentState = APPLICATIONS.length > 0 ? APPLICATIONS[0].status.toLowerCase() : 'apply'; // default to 'apply' if no applications
+    let currentState = window.userState;
     let openChatId = null; // which application's chat is expanded
     let chatOpen = false; // whether the "Chat with Organizer" panel is open (pending/accepted view)
 
@@ -147,6 +150,7 @@
             case 'accepted': return buildBanner('accepted');
             case 'rejected': return buildBanner('rejected');
             case 'owner': return ''; // owner sees no footer
+            case 'Login': return '<p class="login-prompt">Please <a href="/">log in</a> to apply for this activity.</p>';
             default: return currentState;
         }
     }
@@ -337,7 +341,7 @@
 
                     if (result.success) {
                         showToast('SUCCESS', 'Application submitted! The organizer will review it.');
-                        setState('Pending');
+                        setState('pending');
                     } else {
                         showToast('ERROR', result.error ?? 'Something went wrong');
                         submitBtn.disabled = false;
@@ -452,14 +456,6 @@
         }, 5000);
     }
 
-    /* ================================================================
-       DEV SWITCHER (state pill)
-       This floating pill at the bottom of the page is for DEMO /
-       DEVELOPMENT only. It lets you cycle through all 5 use-case
-       states without changing the URL manually.
-       Remove this function (and its call in the DOMContentLoaded
-       handler above) before going to production.
-       ================================================================ */
     function iconPin() { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>'; }
     function iconUsers() { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>'; }
     function iconCalendar() { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>'; }

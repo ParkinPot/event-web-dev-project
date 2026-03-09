@@ -15,8 +15,6 @@ public class EventController : Controller
     {
         _db = db;
     }
-
-    // GET /Event/Join?id=1
     public async Task<IActionResult> Join(int id)
     {
         var post = await _db.ActivityPosts
@@ -26,6 +24,7 @@ public class EventController : Controller
         if (post == null) return NotFound();
 
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
         if (post.OwnerId == currentUserId)
             return RedirectToAction("Index", "ActivityPost", new { id = post.Id });
 
