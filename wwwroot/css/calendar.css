@@ -38,7 +38,7 @@
 .days-header-grid { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 16px; }
 .days-header-grid div { text-align: center; color: #94a3b8; font-size: 14px; font-weight: 500; }
 
-test//.days-display-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+t.days-display-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
 
 .cal-day {
     min-height: 100px;
@@ -54,7 +54,7 @@ test//.days-display-grid { display: grid; grid-template-columns: repeat(7, 1fr);
 .cal-day.not-current { opacity: 0.2; }
 .cal-day.today .day-number { color: #3b82f6; font-weight: 800; }
 
-test//.day-number { display: block; text-align: center; font-size: 15px; font-weight: 600; color: #475569; margin-bottom: 8px; }
+t.day-number { display: block; text-align: center; font-size: 15px; font-weight: 600; color: #475569; margin-bottom: 8px; }
 
 .event-pill {
     font-size: 10px;
@@ -111,86 +111,71 @@ test//.day-number { display: block; text-align: center; font-size: 15px; font-we
 .others, .cat-others { background-color: #64748b; }
 
 /* =============================================
-   Responsive - Mobile (768px and below)
+   Responsive - Phone only (max-width: 600px)
    ============================================= */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
 
-    /* Remove side padding so the page breathes on phone */
+    /* Reduce outer padding on phone */
     .page-background {
-        padding: 16px;
+        padding: 12px;
     }
 
-    /* Stack calendar + right panel vertically */
+    /* Stack: calendar on top, right panel pushed below */
     .calendar-layout-grid {
         grid-template-columns: 1fr;
     }
 
-    /* Make calendar card padding tighter */
+    /* Tighter card padding */
     .card {
-        padding: 16px;
+        padding: 12px;
     }
 
-    /* Smaller day cells so 7 columns fit on phone */
+    /* Shrink day cells so all 7 columns fit */
     .cal-day {
-        min-height: 48px;
-        padding: 6px 4px;
-        border-radius: 8px;
+        min-height: 44px;
+        padding: 4px 2px;
+        border-radius: 6px;
     }
 
-    /* Smaller day number text */
+    /* Smaller day numbers */
     .day-number {
-        font-size: 12px;
-        margin-bottom: 4px;
+        font-size: 11px;
+        margin-bottom: 2px;
     }
 
-    /* Reduce gap between day cells */
+    /* Tighter gap between cells */
     .days-display-grid {
-        gap: 4px;
+        gap: 3px;
     }
 
-    /* Hide event pills on very small cells - too cramped */
+    /* Hide event pills - too small to show */
     .event-pill {
         display: none;
     }
 
-    /* Keep the "+N more" text visible but tiny */
+    /* Keep +N more but tiny */
     .more-text {
         font-size: 9px;
         color: #64748b;
     }
 
-    /* Header text smaller */
+    /* Shrink day header labels (Sun Mon...) */
+    .days-header-grid div {
+        font-size: 11px;
+    }
+
+    /* Smaller page header */
     .calendar-header h1 {
         font-size: 20px;
     }
 
-    /* Month title smaller */
+    /* Smaller month title */
     .month-title {
         font-size: 16px;
     }
 
-    /* Details panel: full width below calendar */
+    /* Details panel full width below calendar */
     .details-card {
         width: 100%;
-    }
-}
-
-/* Extra small screens (480px and below) */
-@media (max-width: 480px) {
-    .page-background {
-        padding: 8px;
-    }
-
-    .cal-day {
-        min-height: 40px;
-        padding: 4px 2px;
-    }
-
-    .day-number {
-        font-size: 11px;
-    }
-
-    .days-header-grid div {
-        font-size: 11px;
     }
 }
