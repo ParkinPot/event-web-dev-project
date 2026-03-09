@@ -22,7 +22,10 @@ x86/
 [Aa][Rr][Mm]64/
 bld/
 [Bb]in/
+bin\
+bin\\
 [Oo]bj/
+obj\
 [Ll]og/
 [Ll]ogs/
 
@@ -155,3 +158,4 @@ PublishProfiles/
 # CSS preprocessors
 .sass-cache/
 *.css.map
+bin?Debug/
