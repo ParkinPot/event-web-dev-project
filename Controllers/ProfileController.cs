@@ -21,18 +21,18 @@ public class ProfileController : Controller
     }
 
     // GET /Profile/Index
-    // GET /Profile/Index?userId=<id>  — view another user's profile (read-only)
+    // GET /Profile/Index?username=<username>  — view another user's profile (read-only)
     [Authorize]
-    public async Task<IActionResult> Index(string? userId)
+    public async Task<IActionResult> Index(string? username)
     {
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         ApplicationUser? user;
         bool isOwner;
 
-        if (string.IsNullOrEmpty(userId) || userId == currentUserId)
+        if (string.IsNullOrEmpty(username))
         {
-            // Viewing own profile
+            // Viewing own profile (no parameter)
             user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
@@ -40,13 +40,20 @@ public class ProfileController : Controller
                 if (user == null) return RedirectToAction("Index", "Home");
             }
             isOwner = true;
+
+            // Lazily generate ProfileSlug for existing users who pre-date this feature
+            if (user.ProfileSlug == null)
+            {
+                user.ProfileSlug = await GenerateUniqueProfileSlugAsync(user.DisplayName ?? user.UserName ?? "user");
+                await _userManager.UpdateAsync(user);
+            }
         }
         else
         {
-            // Viewing someone else's profile
-            user = await _userManager.FindByIdAsync(userId);
+            // Viewing a profile by username slug
+            user = await _context.Users.FirstOrDefaultAsync(u => u.ProfileSlug == username);
             if (user == null) return NotFound();
-            isOwner = false;
+            isOwner = (user.Id == currentUserId);
         }
 
         var profileUserId = user.Id;
@@ -123,6 +130,7 @@ public class ProfileController : Controller
         var viewModel = new ProfileViewModel
         {
             UserId      = profileUserId,
+            Username    = user.ProfileSlug,
             DisplayName = user.DisplayName ?? user.UserName ?? "Unknown User",
             Email       = user.Email ?? "",
             About       = user.About,
@@ -183,13 +191,22 @@ public class ProfileController : Controller
         return View("Index", model);
     }
 
-    [AllowAnonymous]
-    public async Task<IActionResult> View(string username)
+    /// <summary>
+    /// Converts a display name to a URL-safe slug and ensures it is unique
+    /// across all existing profile slugs.
+    /// </summary>
+    private async Task<string> GenerateUniqueProfileSlugAsync(string displayName)
     {
-        var user = await _userManager.FindByNameAsync(username);
-        if (user == null) return NotFound();
-        
-        // Reuse existing Index logic by redirecting internally
-        return await Index(user.Id);
+        var baseSlug = System.Text.RegularExpressions.Regex
+            .Replace(displayName.ToLowerInvariant(), @"[^a-z0-9]+", "_")
+            .Trim('_');
+        if (string.IsNullOrEmpty(baseSlug)) baseSlug = "user";
+
+        var slug = baseSlug;
+        int suffix = 1;
+        while (await _context.Users.AnyAsync(u => u.ProfileSlug == slug))
+            slug = baseSlug + "_" + suffix++;
+
+        return slug;
     }
 }

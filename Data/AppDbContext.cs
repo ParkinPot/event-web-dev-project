@@ -36,5 +36,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             .WithMany()
             .HasForeignKey(n => n.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<ApplicationUser>()
+            .HasIndex(u => u.ProfileSlug)
+            .IsUnique();
     }
 }
