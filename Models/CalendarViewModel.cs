@@ -28,6 +28,8 @@ namespace event_web_dev_project.Models
         public string? SourceType { get; set; }
         public string? Status { get; set; }
         public string? Author { get; set; }
+        public int MembersJoined { get; set; }
+        public int MembersTotal { get; set; }
         
         public string CssColorClass => Category?.ToLower() switch
         {
