@@ -297,7 +297,10 @@ const ReviewModal = (() => {
         document.getElementById('star-label').textContent = 'Select a rating';
 
         // Reset stars
-        document.querySelectorAll('.star-pick').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('#review-modal .star-pick').forEach(s => {
+            s.classList.remove('active');
+            s.style.color = '';
+        });
 
         document.getElementById('review-modal').style.display = 'flex';
     }
@@ -370,7 +373,7 @@ const ReviewModal = (() => {
 
     function handleStarClick(star) {
         selectedStars = parseInt(star.dataset.value);
-        document.querySelectorAll('.star-pick').forEach(s => {
+        document.querySelectorAll('#review-modal .star-pick').forEach(s => {
             s.classList.toggle('active', parseInt(s.dataset.value) <= selectedStars);
         });
         document.getElementById('star-label').textContent = starLabels[selectedStars];
@@ -394,6 +397,13 @@ document.head.appendChild(reviewStyle);
 // We extend the switch statement by patching the init
 const _originalInit = EventBoard.init;
 document.addEventListener('click', e => {
+    // Handle star picker clicks first (stars have no data-action attribute)
+    const star = e.target.closest('#review-modal .star-pick');
+    if (star) {
+        ReviewModal.handleStarClick(star);
+        return;
+    }
+
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
     switch (btn.dataset.action) {
@@ -401,25 +411,21 @@ document.addEventListener('click', e => {
         case 'close-review-modal':  ReviewModal.close();           break;
         case 'submit-review':       ReviewModal.submit();          break;
     }
-    // Star picker clicks
-    if (btn.classList.contains('star-pick')) {
-        ReviewModal.handleStarClick(btn);
-    }
 });
 
 // Star hover effect
 document.addEventListener('mouseover', e => {
-    const star = e.target.closest('.star-pick');
+    const star = e.target.closest('#review-modal .star-pick');
     if (!star) return;
     const val = parseInt(star.dataset.value);
-    document.querySelectorAll('.star-pick').forEach(s => {
+    document.querySelectorAll('#review-modal .star-pick').forEach(s => {
         s.style.color = parseInt(s.dataset.value) <= val ? '#f59e0b' : '';
     });
 });
 
 document.addEventListener('mouseout', e => {
-    if (!e.target.closest('.star-picker')) return;
-    document.querySelectorAll('.star-pick').forEach(s => {
+    if (!e.target.closest('#review-modal .star-picker')) return;
+    document.querySelectorAll('#review-modal .star-pick').forEach(s => {
         s.style.color = '';
     });
 });
