@@ -12,7 +12,7 @@ using event_web_dev_project.Data;
 namespace event_web_dev_project.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260311135749_AddProfileSlug")]
+    [Migration("20260311140154_AddProfileSlug")]
     partial class AddProfileSlug
     {
         /// <inheritdoc />
@@ -310,6 +310,9 @@ namespace event_web_dev_project.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("ProfileSlug")
+                        .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
                 });

@@ -126,7 +126,7 @@ public class LoginController : Controller
         var slug = baseSlug;
         int suffix = 1;
         while (await _context.Users.AnyAsync(u => u.ProfileSlug == slug))
-            slug = baseSlug + suffix++;
+            slug = baseSlug + "_" + suffix++;
 
         return slug;
     }

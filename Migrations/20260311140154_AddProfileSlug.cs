@@ -15,11 +15,21 @@ namespace event_web_dev_project.Migrations
                 table: "AspNetUsers",
                 type: "text",
                 nullable: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_ProfileSlug",
+                table: "AspNetUsers",
+                column: "ProfileSlug",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropIndex(
+                name: "IX_AspNetUsers_ProfileSlug",
+                table: "AspNetUsers");
+
             migrationBuilder.DropColumn(
                 name: "ProfileSlug",
                 table: "AspNetUsers");

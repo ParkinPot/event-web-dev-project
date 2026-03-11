@@ -40,6 +40,13 @@ public class ProfileController : Controller
                 if (user == null) return RedirectToAction("Index", "Home");
             }
             isOwner = true;
+
+            // Lazily generate ProfileSlug for existing users who pre-date this feature
+            if (user.ProfileSlug == null)
+            {
+                user.ProfileSlug = await GenerateUniqueProfileSlugAsync(user.DisplayName ?? user.UserName ?? "user");
+                await _userManager.UpdateAsync(user);
+            }
         }
         else
         {
@@ -182,5 +189,24 @@ public class ProfileController : Controller
             ModelState.AddModelError("", error.Description);
 
         return View("Index", model);
+    }
+
+    /// <summary>
+    /// Converts a display name to a URL-safe slug and ensures it is unique
+    /// across all existing profile slugs.
+    /// </summary>
+    private async Task<string> GenerateUniqueProfileSlugAsync(string displayName)
+    {
+        var baseSlug = System.Text.RegularExpressions.Regex
+            .Replace(displayName.ToLowerInvariant(), @"[^a-z0-9]+", "_")
+            .Trim('_');
+        if (string.IsNullOrEmpty(baseSlug)) baseSlug = "user";
+
+        var slug = baseSlug;
+        int suffix = 1;
+        while (await _context.Users.AnyAsync(u => u.ProfileSlug == slug))
+            slug = baseSlug + "_" + suffix++;
+
+        return slug;
     }
 }

@@ -308,6 +308,9 @@ namespace event_web_dev_project.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
+                    b.HasIndex("ProfileSlug")
+                        .IsUnique();
+
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
