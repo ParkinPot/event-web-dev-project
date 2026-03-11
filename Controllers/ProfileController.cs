@@ -182,4 +182,14 @@ public class ProfileController : Controller
 
         return View("Index", model);
     }
+
+    [AllowAnonymous]
+    public async Task<IActionResult> View(string username)
+    {
+        var user = await _userManager.FindByNameAsync(username);
+        if (user == null) return NotFound();
+        
+        // Reuse existing Index logic by redirecting internally
+        return await Index(user.Id);
+    }
 }

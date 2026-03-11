@@ -29,6 +29,7 @@
             description    = Model.Description,
             location       = Model.Location,
             postedBy       = Model.PostedBy,
+            postedByUsername = Model.Owner != null ? Model.Owner.UserName : "",
             ownerId        = Model.OwnerId,
             postedAt       = Model.PostedAt.ToString("MMM d, yyyy"),
             expiresAt      = Model.ExpiresAt.ToString("MMM d, yyyy"),

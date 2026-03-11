@@ -21,7 +21,7 @@
             title: data.title,
             poster: {
                 name: data.postedBy,
-                href: data.ownerId ? '/Profile/Index?userId=' + data.ownerId : '#'
+                href: data.postedByUsername ? '/Profile/View/' + data.postedByUsername : '#'
             },
             postedAt: data.postedAt,
             description: data.description,
