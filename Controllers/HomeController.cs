@@ -61,6 +61,10 @@ public class HomeController : Controller
             var statusList = statusFilter.Split(',').Select(s => s.Trim()).ToList();
             query = query.Where(p => statusList.Contains(p.Status));
         }
+        else
+        {
+            query = query.Where(p => p.Status == "Open");
+        }
 
         var now = DateTime.Now;
 
