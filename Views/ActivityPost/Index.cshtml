@@ -192,7 +192,7 @@ else
 <script src="~/js/icons.js"></script>
 <script src="~/js/events.js"></script>
 
-@if (Model.Status == "Closed")
+@if (Model.Status == "Closed" || Model.Status == "Expired")
 {
     <script>
     /* ── Participant Review Modal ─────────────────────────────────────────── */
