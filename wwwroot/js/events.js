@@ -101,6 +101,8 @@ const EventBoard = (() => {
 
     // ─── Actions ────────────────────────────────────────────────────────────
 
+    
+
     // Accept an application — updates the badge and hides the action buttons
     async function acceptApplication(btn) {
         const card = btn.closest('.application-card');
