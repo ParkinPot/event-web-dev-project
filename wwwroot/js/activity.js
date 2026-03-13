@@ -157,7 +157,7 @@
             case 'accepted': return buildBanner('accepted');
             case 'rejected': return buildBanner('rejected');
             case 'owner': return ''; // owner sees no footer
-            case 'Login': return '<p class="login-prompt">Please <a href="/">log in</a> to apply for this activity.</p>';
+            case 'login': return '<p class="login-prompt">Please <a href="/">log in</a> to apply for this activity.</p>';
             default: return currentState;
         }
     }
